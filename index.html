@@ -523,28 +523,52 @@
   };
 
   let tokenAcesso = null;
+  let tokenClient = null;
   let modeloSelecionado = null;
   let historico = JSON.parse(localStorage.getItem('formatadoc_historico') || '[]');
 
-  // ── AUTH ──
-  function getRedirectUri() {
-    // URI exato cadastrado no Google Cloud
-    return 'https://reserva-arena.github.io/formatadoc';
+  // ── AUTH — Google Identity Services ──
+  function initGoogleAuth() {
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: SCOPES,
+      prompt: 'select_account',
+      callback: async (response) => {
+        if (response.error) {
+          console.error('Erro OAuth:', response);
+          mostrarLogin();
+          return;
+        }
+        tokenAcesso = response.access_token;
+        localStorage.setItem('formatadoc_token', tokenAcesso);
+        localStorage.setItem('formatadoc_token_exp', String(Date.now() + (response.expires_in * 1000)));
+        await carregarUsuario();
+      }
+    });
+
+    // Verificar token salvo
+    const savedToken = localStorage.getItem('formatadoc_token');
+    const savedExp = localStorage.getItem('formatadoc_token_exp');
+    if (savedToken && savedExp && Date.now() < parseInt(savedExp)) {
+      tokenAcesso = savedToken;
+      mostrarAppTela();
+      carregarUsuario();
+      renderizarHistorico();
+    } else {
+      mostrarLogin();
+    }
   }
 
   function fazerLogin() {
-    const params = new URLSearchParams({
-      client_id: CLIENT_ID,
-      redirect_uri: getRedirectUri(),
-      response_type: 'token',
-      scope: SCOPES,
-      prompt: 'select_account',
-      hd: 'colegioarena.com.br'
-    });
-    window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
+    if (tokenClient) {
+      tokenClient.requestAccessToken();
+    }
   }
 
   function fazerLogout() {
+    if (tokenAcesso) {
+      google.accounts.oauth2.revoke(tokenAcesso);
+    }
     tokenAcesso = null;
     localStorage.removeItem('formatadoc_token');
     localStorage.removeItem('formatadoc_token_exp');
@@ -556,11 +580,9 @@
     document.getElementById('app-screen').classList.add('hidden');
   }
 
-  function mostrarApp(token) {
-    tokenAcesso = token;
+  function mostrarAppTela() {
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('app-screen').classList.remove('hidden');
-    carregarUsuario();
     renderizarHistorico();
   }
 
@@ -571,46 +593,19 @@
       });
       const user = await res.json();
 
-      // Verificar domínio
       if (!user.email || !user.email.endsWith('@colegioarena.com.br')) {
         mostrarStatus('error', '⛔ Acesso negado', 'Este app é restrito a contas @colegioarena.com.br.');
         setTimeout(fazerLogout, 3000);
         return;
       }
 
+      mostrarAppTela();
       const iniciais = (user.given_name?.[0] || '') + (user.family_name?.[0] || '');
       document.getElementById('user-initials').textContent = iniciais.toUpperCase() || '?';
       document.getElementById('user-name-display').textContent = user.given_name || user.email;
     } catch (e) {
       console.error('Erro ao carregar usuário:', e);
     }
-  }
-
-  // ── VERIFICAR TOKEN NA URL (callback OAuth) ──
-  function verificarToken() {
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    const token = params.get('access_token');
-    const expiresIn = params.get('expires_in');
-
-    if (token) {
-      const expiry = Date.now() + (parseInt(expiresIn) * 1000);
-      localStorage.setItem('formatadoc_token', token);
-      localStorage.setItem('formatadoc_token_exp', expiry);
-      history.replaceState(null, '', window.location.pathname);
-      mostrarApp(token);
-      return true;
-    }
-
-    // Verificar token salvo
-    const savedToken = localStorage.getItem('formatadoc_token');
-    const savedExp = localStorage.getItem('formatadoc_token_exp');
-    if (savedToken && savedExp && Date.now() < parseInt(savedExp)) {
-      mostrarApp(savedToken);
-      return true;
-    }
-
-    return false;
   }
 
   // ── MODELO ──
@@ -883,9 +878,16 @@
   }
 
   // ── INIT ──
-  if (!verificarToken()) {
-    mostrarLogin();
-  }
+  // Aguarda a biblioteca do Google carregar
+  window.addEventListener('load', () => {
+    if (typeof google !== 'undefined' && google.accounts) {
+      initGoogleAuth();
+    } else {
+      // Retry se a lib ainda não carregou
+      setTimeout(() => initGoogleAuth(), 500);
+    }
+  });
 </script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </body>
 </html>
