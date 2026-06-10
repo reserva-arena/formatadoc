@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formatadoc — Colégio Arena</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --teal: #009B8D;
+      --teal-dark: #007A6F;
+      --teal-light: #E6F7F6;
+      --bg: #F5F7FA;
+      --white: #FFFFFF;
+      --text: #1A202C;
+      --text-muted: #718096;
+      --border: #E2E8F0;
+      --error: #E53E3E;
+      --success: #38A169;
+      --warning: #DD6B20;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #009B8D 0%, #006B5F 100%);
+    }
+
+    .login-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      background: var(--teal-light);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 36px;
+    }
+
+    .login-card h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .login-card p {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .btn-google {
+      width: 100%;
+      padding: 14px 20px;
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      transition: all 0.2s;
+    }
+
+    .btn-google:hover {
+      border-color: var(--teal);
+      background: var(--teal-light);
+    }
+
+    .login-note {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--teal);
+    }
+
+    .header-brand span {
+      font-size: 20px;
+    }
+
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .btn-logout {
+      padding: 6px 12px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover { border-color: var(--error); color: var(--error); }
+
+    /* ── MAIN ── */
+    main {
+      max-width: 720px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .page-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* ── MODELO SELECT ── */
+    .modelo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 4px;
+    }
+
+    .modelo-btn {
+      padding: 14px 10px;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      background: var(--white);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .modelo-btn:hover {
+      border-color: var(--teal);
+      background: var(--teal-light);
+    }
+
+    .modelo-btn.active {
+      border-color: var(--teal);
+      background: var(--teal-light);
+    }
+
+    .modelo-btn .emoji { font-size: 22px; display: block; margin-bottom: 6px; }
+    .modelo-btn .label { font-size: 12px; font-weight: 600; color: var(--text); }
+    .modelo-btn .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ── INPUT ── */
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .input-group input:focus { border-color: var(--teal); }
+    .input-group input::placeholder { color: #A0AEC0; }
+
+    /* ── BUTTON ── */
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--teal);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: var(--teal-dark); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── STATUS ── */
+    .status-box {
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .status-box.loading { background: #EBF8FF; color: #2B6CB0; border: 1px solid #BEE3F8; }
+    .status-box.success { background: #F0FFF4; color: #276749; border: 1px solid #9AE6B4; }
+    .status-box.error { background: #FFF5F5; color: #C53030; border: 1px solid #FEB2B2; }
+
+    .status-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .status-text { flex: 1; }
+    .status-text strong { display: block; font-weight: 600; margin-bottom: 3px; }
+
+    .result-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      padding: 8px 14px;
+      background: var(--success);
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .result-link:hover { opacity: 0.9; }
+
+    /* ── HISTÓRICO ── */
+    .historico-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .historico-item:last-child { border-bottom: none; }
+
+    .hist-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--teal-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .hist-info { flex: 1; min-width: 0; }
+    .hist-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .hist-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    .hist-link {
+      font-size: 12px;
+      color: var(--teal);
+      text-decoration: none;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .hist-link:hover { text-decoration: underline; }
+
+    .empty-hist {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* ── SPINNER ── */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── STEPS ── */
+    .steps {
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .step { display: flex; align-items: center; gap: 4px; }
+    .step.active { color: var(--teal); font-weight: 600; }
+    .step.done { color: var(--success); }
+    .step-sep { color: var(--border); }
+
+    /* ── HIDDEN ── */
+    .hidden { display: none !important; }
+
+    @media (max-width: 480px) {
+      .modelo-grid { grid-template-columns: 1fr; }
+      main { padding: 0 16px; margin: 24px auto; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">📄</div>
+    <h1>Formatadoc</h1>
+    <p>Formatação automática de avaliações<br>Colégio Arena</p>
+    <button class="btn-google" onclick="fazerLogin()">
+      <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+      Entrar com Google
+    </button>
+    <p class="login-note">Acesso restrito a contas @colegioarena.com.br</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen" class="hidden">
+  <header>
+    <div class="header-brand">
+      <span>📄</span> Formatadoc
+    </div>
+    <div class="header-user">
+      <div class="user-avatar" id="user-initials">?</div>
+      <span class="user-name" id="user-name-display">—</span>
+      <button class="btn-logout" onclick="fazerLogout()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="page-title">Formatar Avaliação</div>
+    <div class="page-subtitle">Cole o link do Google Docs e escolha o modelo para formatar automaticamente.</div>
+
+    <!-- PASSO 1: MODELO -->
+    <div class="card">
+      <div class="card-title">1. Selecione o modelo</div>
+      <div class="modelo-grid">
+        <button class="modelo-btn" onclick="selecionarModelo('infantil', this)">
+          <span class="emoji">🌱</span>
+          <span class="label">Infantil</span>
+          <span class="sub">Ed. Infantil</span>
+        </button>
+        <button class="modelo-btn" onclick="selecionarModelo('fund1', this)">
+          <span class="emoji">📚</span>
+          <span class="label">Fundamental I</span>
+          <span class="sub">1º ao 5º ano</span>
+        </button>
+        <button class="modelo-btn" onclick="selecionarModelo('fund2', this)">
+          <span class="emoji">🎓</span>
+          <span class="label">Fundamental II</span>
+          <span class="sub">6º ao 9º ano</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- PASSO 2: LINK -->
+    <div class="card">
+      <div class="card-title">2. Link do documento</div>
+      <div class="input-group">
+        <label for="doc-link">Link do Google Docs (do professor)</label>
+        <input
+          type="url"
+          id="doc-link"
+          placeholder="https://docs.google.com/document/d/..."
+          oninput="validarLink()"
+        />
+      </div>
+      <button class="btn-primary" id="btn-formatar" onclick="formatarDocumento()" disabled>
+        <span id="btn-texto">Formatar documento</span>
+        <div class="spinner hidden" id="btn-spinner"></div>
+      </button>
+
+      <!-- STATUS -->
+      <div id="status-area"></div>
+    </div>
+
+    <!-- HISTÓRICO -->
+    <div class="card">
+      <div class="card-title">Histórico recente</div>
+      <div id="historico-lista">
+        <div class="empty-hist">Nenhum documento formatado ainda.</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // ── CONFIG ──
+  const CLIENT_ID = '450030397976-647mvcl7sla23dhnjr9i3ru11lofolr0.apps.googleusercontent.com';
+  const SCOPES = 'https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive';
+
+  // Padrões de formatação por modelo
+  const MODELOS = {
+    infantil: {
+      nome: 'Ed. Infantil',
+      fonte: 'Arial',
+      tamanhoCorpo: 14,
+      tamanhoTitulo: 16,
+      espacamento: 1.5,
+      margens: { top: 72, bottom: 72, left: 72, right: 72 }
+    },
+    fund1: {
+      nome: 'Fundamental I',
+      fonte: 'Arial',
+      tamanhoCorpo: 12,
+      tamanhoTitulo: 14,
+      espacamento: 1.15,
+      margens: { top: 72, bottom: 72, left: 72, right: 72 }
+    },
+    fund2: {
+      nome: 'Fundamental II',
+      fonte: 'Arial',
+      tamanhoCorpo: 12,
+      tamanhoTitulo: 13,
+      espacamento: 1.15,
+      margens: { top: 72, bottom: 72, left: 72, right: 72 }
+    }
+  };
+
+  let tokenAcesso = null;
+  let modeloSelecionado = null;
+  let historico = JSON.parse(localStorage.getItem('formatadoc_historico') || '[]');
+
+  // ── AUTH ──
+  function fazerLogin() {
+    const params = new URLSearchParams({
+      client_id: CLIENT_ID,
+      redirect_uri: window.location.origin + window.location.pathname,
+      response_type: 'token',
+      scope: SCOPES,
+      prompt: 'select_account',
+      hd: 'colegioarena.com.br'
+    });
+    window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params;
+  }
+
+  function fazerLogout() {
+    tokenAcesso = null;
+    localStorage.removeItem('formatadoc_token');
+    localStorage.removeItem('formatadoc_token_exp');
+    mostrarLogin();
+  }
+
+  function mostrarLogin() {
+    document.getElementById('login-screen').classList.remove('hidden');
+    document.getElementById('app-screen').classList.add('hidden');
+  }
+
+  function mostrarApp(token) {
+    tokenAcesso = token;
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-screen').classList.remove('hidden');
+    carregarUsuario();
+    renderizarHistorico();
+  }
+
+  async function carregarUsuario() {
+    try {
+      const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { Authorization: 'Bearer ' + tokenAcesso }
+      });
+      const user = await res.json();
+
+      // Verificar domínio
+      if (!user.email || !user.email.endsWith('@colegioarena.com.br')) {
+        mostrarStatus('error', '⛔ Acesso negado', 'Este app é restrito a contas @colegioarena.com.br.');
+        setTimeout(fazerLogout, 3000);
+        return;
+      }
+
+      const iniciais = (user.given_name?.[0] || '') + (user.family_name?.[0] || '');
+      document.getElementById('user-initials').textContent = iniciais.toUpperCase() || '?';
+      document.getElementById('user-name-display').textContent = user.given_name || user.email;
+    } catch (e) {
+      console.error('Erro ao carregar usuário:', e);
+    }
+  }
+
+  // ── VERIFICAR TOKEN NA URL (callback OAuth) ──
+  function verificarToken() {
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const token = params.get('access_token');
+    const expiresIn = params.get('expires_in');
+
+    if (token) {
+      const expiry = Date.now() + (parseInt(expiresIn) * 1000);
+      localStorage.setItem('formatadoc_token', token);
+      localStorage.setItem('formatadoc_token_exp', expiry);
+      history.replaceState(null, '', window.location.pathname);
+      mostrarApp(token);
+      return true;
+    }
+
+    // Verificar token salvo
+    const savedToken = localStorage.getItem('formatadoc_token');
+    const savedExp = localStorage.getItem('formatadoc_token_exp');
+    if (savedToken && savedExp && Date.now() < parseInt(savedExp)) {
+      mostrarApp(savedToken);
+      return true;
+    }
+
+    return false;
+  }
+
+  // ── MODELO ──
+  function selecionarModelo(modelo, btn) {
+    document.querySelectorAll('.modelo-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    modeloSelecionado = modelo;
+    validarFormulario();
+  }
+
+  function validarLink() {
+    validarFormulario();
+  }
+
+  function validarFormulario() {
+    const link = document.getElementById('doc-link').value.trim();
+    const linkValido = link.includes('docs.google.com/document');
+    const btn = document.getElementById('btn-formatar');
+    btn.disabled = !(linkValido && modeloSelecionado);
+  }
+
+  function extrairDocId(url) {
+    const match = url.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  }
+
+  // ── FORMATAR ──
+  async function formatarDocumento() {
+    const link = document.getElementById('doc-link').value.trim();
+    const docId = extrairDocId(link);
+
+    if (!docId) {
+      mostrarStatus('error', 'Link inválido', 'Cole um link válido do Google Docs.');
+      return;
+    }
+
+    if (!modeloSelecionado) {
+      mostrarStatus('error', 'Selecione um modelo', 'Escolha Infantil, Fundamental I ou Fundamental II.');
+      return;
+    }
+
+    setBotaoCarregando(true);
+    mostrarStatus('loading', 'Processando...', 'Lendo o documento original.');
+
+    try {
+      // 1. Buscar o documento original
+      mostrarSteps(1);
+      const docOriginal = await buscarDocumento(docId);
+      const nomeOriginal = docOriginal.title;
+
+      // 2. Criar cópia
+      mostrarStatus('loading', 'Criando cópia...', 'Copiando o documento para não alterar o original.');
+      mostrarSteps(2);
+      const copia = await copiarDocumento(docId, nomeOriginal + ' - Formatado');
+
+      // 3. Aplicar formatação
+      mostrarStatus('loading', 'Aplicando formatação...', 'Ajustando fonte, tamanho e espaçamento.');
+      mostrarSteps(3);
+      await aplicarFormatacao(copia.id, docOriginal, modeloSelecionado);
+
+      // 4. Sucesso
+      const urlFormatado = `https://docs.google.com/document/d/${copia.id}/edit`;
+      setBotaoCarregando(false);
+      mostrarSucesso(nomeOriginal, urlFormatado, copia.id);
+      salvarHistorico(nomeOriginal, urlFormatado, modeloSelecionado);
+      document.getElementById('doc-link').value = '';
+      modeloSelecionado = null;
+      document.querySelectorAll('.modelo-btn').forEach(b => b.classList.remove('active'));
+      validarFormulario();
+
+    } catch (err) {
+      setBotaoCarregando(false);
+      console.error(err);
+      if (err.status === 403 || err.status === 401) {
+        mostrarStatus('error', 'Sem permissão', 'Certifique-se de que o documento está compartilhado com sua conta do Google.');
+      } else {
+        mostrarStatus('error', 'Erro ao formatar', err.message || 'Tente novamente em alguns instantes.');
+      }
+    }
+  }
+
+  async function buscarDocumento(docId) {
+    const res = await fetch(`https://docs.googleapis.com/v1/documents/${docId}`, {
+      headers: { Authorization: 'Bearer ' + tokenAcesso }
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw { status: res.status, message: err.error?.message || 'Erro ao ler documento' };
+    }
+    return res.json();
+  }
+
+  async function copiarDocumento(docId, novoNome) {
+    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${docId}/copy`, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + tokenAcesso,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: novoNome })
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw { status: res.status, message: err.error?.message || 'Erro ao copiar documento' };
+    }
+    return res.json();
+  }
+
+  async function aplicarFormatacao(docId, docOriginal, modeloKey) {
+    const modelo = MODELOS[modeloKey];
+    const requests = [];
+    const body = docOriginal.body;
+
+    // Aplicar fonte e tamanho em todos os parágrafos
+    for (const element of body.content || []) {
+      if (!element.paragraph) continue;
+      const para = element.paragraph;
+      const startIndex = element.startIndex || 0;
+      const endIndex = element.endIndex || 0;
+      if (endIndex <= startIndex) continue;
+
+      const style = para.paragraphStyle?.namedStyleType || 'NORMAL_TEXT';
+      const eTitulo = style === 'HEADING_1' || style === 'HEADING_2' || style === 'TITLE';
+      const tamanho = eTitulo ? modelo.tamanhoTitulo : modelo.tamanhoCorpo;
+
+      // Formatar texto
+      for (const elem of para.elements || []) {
+        if (!elem.textRun) continue;
+        const ts = elem.startIndex;
+        const te = elem.endIndex;
+        if (te <= ts) continue;
+
+        requests.push({
+          updateTextStyle: {
+            range: { startIndex: ts, endIndex: te },
+            textStyle: {
+              weightedFontFamily: { fontFamily: modelo.fonte },
+              fontSize: { magnitude: tamanho, unit: 'PT' }
+            },
+            fields: 'weightedFontFamily,fontSize'
+          }
+        });
+      }
+
+      // Espaçamento entre linhas
+      if (endIndex > startIndex + 1) {
+        requests.push({
+          updateParagraphStyle: {
+            range: { startIndex, endIndex },
+            paragraphStyle: {
+              lineSpacing: modelo.espacamento * 100,
+              spaceAbove: { magnitude: eTitulo ? 12 : 6, unit: 'PT' },
+              spaceBelow: { magnitude: eTitulo ? 6 : 4, unit: 'PT' }
+            },
+            fields: 'lineSpacing,spaceAbove,spaceBelow'
+          }
+        });
+      }
+    }
+
+    if (requests.length === 0) return;
+
+    // Dividir em batches de 100
+    for (let i = 0; i < requests.length; i += 100) {
+      const batch = requests.slice(i, i + 100);
+      const res = await fetch(`https://docs.googleapis.com/v1/documents/${docId}:batchUpdate`, {
+        method: 'POST',
+        headers: {
+          Authorization: 'Bearer ' + tokenAcesso,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ requests: batch })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw { status: res.status, message: err.error?.message || 'Erro ao aplicar formatação' };
+      }
+    }
+  }
+
+  // ── UI HELPERS ──
+  function setBotaoCarregando(loading) {
+    const btn = document.getElementById('btn-formatar');
+    const texto = document.getElementById('btn-texto');
+    const spinner = document.getElementById('btn-spinner');
+    btn.disabled = loading;
+    if (loading) {
+      texto.textContent = 'Formatando...';
+      spinner.classList.remove('hidden');
+    } else {
+      texto.textContent = 'Formatar documento';
+      spinner.classList.add('hidden');
+    }
+  }
+
+  function mostrarStatus(tipo, titulo, mensagem) {
+    const icons = { loading: '⏳', success: '✅', error: '❌' };
+    document.getElementById('status-area').innerHTML = `
+      <div class="status-box ${tipo}">
+        <span class="status-icon">${icons[tipo]}</span>
+        <div class="status-text">
+          <strong>${titulo}</strong>
+          ${mensagem}
+        </div>
+      </div>
+    `;
+  }
+
+  function mostrarSucesso(nome, url, id) {
+    document.getElementById('status-area').innerHTML = `
+      <div class="status-box success">
+        <span class="status-icon">✅</span>
+        <div class="status-text">
+          <strong>Documento formatado com sucesso!</strong>
+          "${nome} - Formatado" está pronto no seu Drive.
+          <br>
+          <a class="result-link" href="${url}" target="_blank">📄 Abrir documento formatado</a>
+        </div>
+      </div>
+    `;
+  }
+
+  function mostrarSteps(step) {
+    const labels = ['Lendo original', 'Copiando', 'Formatando'];
+    const html = labels.map((l, i) => {
+      const cls = i + 1 < step ? 'done' : i + 1 === step ? 'active' : '';
+      const icon = i + 1 < step ? '✓' : i + 1 === step ? '●' : '○';
+      return `<span class="step ${cls}">${icon} ${l}</span>${i < 2 ? '<span class="step-sep">→</span>' : ''}`;
+    }).join('');
+    document.getElementById('status-area').innerHTML = `
+      <div class="status-box loading">
+        <span class="status-icon">⏳</span>
+        <div class="status-text">
+          <strong>Processando...</strong>
+          <div class="steps">${html}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // ── HISTÓRICO ──
+  function salvarHistorico(nome, url, modelo) {
+    historico.unshift({
+      nome,
+      url,
+      modelo: MODELOS[modelo].nome,
+      data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+    });
+    historico = historico.slice(0, 10);
+    localStorage.setItem('formatadoc_historico', JSON.stringify(historico));
+    renderizarHistorico();
+  }
+
+  function renderizarHistorico() {
+    const lista = document.getElementById('historico-lista');
+    if (!historico.length) {
+      lista.innerHTML = '<div class="empty-hist">Nenhum documento formatado ainda.</div>';
+      return;
+    }
+    lista.innerHTML = historico.map(h => `
+      <div class="historico-item">
+        <div class="hist-icon">📄</div>
+        <div class="hist-info">
+          <div class="hist-name">${h.nome} - Formatado</div>
+          <div class="hist-meta">${h.modelo} · ${h.data}</div>
+        </div>
+        <a class="hist-link" href="${h.url}" target="_blank">Abrir →</a>
+      </div>
+    `).join('');
+  }
+
+  // ── INIT ──
+  if (!verificarToken()) {
+    mostrarLogin();
+  }
+</script>
+</body>
+</html>
