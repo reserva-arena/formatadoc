@@ -6,399 +6,138 @@
   <title>Formatadoc — Colégio Arena</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-
     :root {
-      --teal: #009B8D;
-      --teal-dark: #007A6F;
-      --teal-light: #E6F7F6;
-      --bg: #F5F7FA;
-      --white: #FFFFFF;
-      --text: #1A202C;
-      --text-muted: #718096;
-      --border: #E2E8F0;
-      --error: #E53E3E;
-      --success: #38A169;
-      --warning: #DD6B20;
+      --teal: #009B8D; --teal-dark: #007A6F; --teal-light: #E6F7F6;
+      --bg: #F5F7FA; --white: #FFFFFF; --text: #1A202C; --text-muted: #718096;
+      --border: #E2E8F0; --error: #E53E3E; --success: #38A169; --warning: #DD6B20;
       --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.05);
-      --shadow-lg: 0 8px 32px rgba(0,0,0,0.10);
-      --radius: 12px;
+      --shadow-lg: 0 8px 32px rgba(0,0,0,0.10); --radius: 12px;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-    }
+    /* LOGIN */
+    #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #009B8D 0%, #006B5F 100%); }
+    .login-card { background: var(--white); border-radius: 20px; padding: 48px 40px; width: 100%; max-width: 400px; text-align: center; box-shadow: var(--shadow-lg); }
+    .login-logo { width: 80px; height: 80px; background: var(--teal-light); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 36px; }
+    .login-card h1 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+    .login-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 32px; }
+    .btn-google { width: 100%; padding: 14px 20px; background: var(--white); border: 2px solid var(--border); border-radius: 10px; font-size: 15px; font-weight: 600; color: var(--text); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.2s; }
+    .btn-google:hover { border-color: var(--teal); background: var(--teal-light); }
+    .login-note { margin-top: 20px; font-size: 12px; color: var(--text-muted); }
 
-    /* ── LOGIN ── */
-    #login-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, #009B8D 0%, #006B5F 100%);
-    }
-
-    .login-card {
-      background: var(--white);
-      border-radius: 20px;
-      padding: 48px 40px;
-      width: 100%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .login-logo {
-      width: 80px;
-      height: 80px;
-      background: var(--teal-light);
-      border-radius: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      font-size: 36px;
-    }
-
-    .login-card h1 {
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 6px;
-    }
-
-    .login-card p {
-      color: var(--text-muted);
-      font-size: 14px;
-      margin-bottom: 32px;
-    }
-
-    .btn-google {
-      width: 100%;
-      padding: 14px 20px;
-      background: var(--white);
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      transition: all 0.2s;
-    }
-
-    .btn-google:hover {
-      border-color: var(--teal);
-      background: var(--teal-light);
-    }
-
-    .login-note {
-      margin-top: 20px;
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    /* ── HEADER ── */
-    header {
-      background: var(--white);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header-brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 700;
-      font-size: 16px;
-      color: var(--teal);
-    }
-
-    .header-brand span {
-      font-size: 20px;
-    }
-
-    .header-user {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--teal);
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .user-name {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    .btn-logout {
-      padding: 6px 12px;
-      background: transparent;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      font-size: 12px;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
+    /* HEADER */
+    header { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 24px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .header-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 16px; color: var(--teal); }
+    .header-user { display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--teal); color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+    .user-name { font-size: 13px; font-weight: 500; color: var(--text-muted); }
+    .btn-logout { padding: 6px 12px; background: transparent; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; color: var(--text-muted); cursor: pointer; transition: all 0.2s; }
     .btn-logout:hover { border-color: var(--error); color: var(--error); }
 
-    /* ── MAIN ── */
-    main {
-      max-width: 720px;
-      margin: 40px auto;
-      padding: 0 24px;
-    }
+    /* MAIN */
+    main { max-width: 760px; margin: 40px auto; padding: 0 24px 60px; }
+    .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+    .page-subtitle { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
 
-    .page-title {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
+    /* CARD */
+    .card { background: var(--white); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); margin-bottom: 20px; }
+    .card-title { font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 16px; }
 
-    .page-subtitle {
-      font-size: 14px;
-      color: var(--text-muted);
-      margin-bottom: 32px;
-    }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 28px;
-      box-shadow: var(--shadow);
-      margin-bottom: 20px;
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-    }
-
-    /* ── MODELO SELECT ── */
-    .modelo-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 4px;
-    }
-
-    .modelo-btn {
-      padding: 14px 10px;
-      border: 2px solid var(--border);
-      border-radius: 10px;
-      background: var(--white);
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    .modelo-btn:hover {
-      border-color: var(--teal);
-      background: var(--teal-light);
-    }
-
-    .modelo-btn.active {
-      border-color: var(--teal);
-      background: var(--teal-light);
-    }
-
+    /* MODELO */
+    .modelo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .modelo-btn { padding: 14px 10px; border: 2px solid var(--border); border-radius: 10px; background: var(--white); cursor: pointer; text-align: center; transition: all 0.2s; }
+    .modelo-btn:hover { border-color: var(--teal); background: var(--teal-light); }
+    .modelo-btn.active { border-color: var(--teal); background: var(--teal-light); }
     .modelo-btn .emoji { font-size: 22px; display: block; margin-bottom: 6px; }
     .modelo-btn .label { font-size: 12px; font-weight: 600; color: var(--text); }
     .modelo-btn .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-    /* ── INPUT ── */
-    .input-group {
-      margin-bottom: 16px;
+    /* INPUT */
+    .input-group { margin-bottom: 16px; }
+    .input-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+    .input-group input, .input-group select, .input-group textarea {
+      width: 100%; padding: 11px 14px; border: 2px solid var(--border); border-radius: 8px;
+      font-size: 14px; font-family: 'Inter', sans-serif; color: var(--text);
+      transition: border-color 0.2s; outline: none; background: white;
     }
+    .input-group input:focus, .input-group select:focus, .input-group textarea:focus { border-color: var(--teal); }
+    .input-group input::placeholder, .input-group textarea::placeholder { color: #A0AEC0; }
+    .input-group textarea { resize: vertical; min-height: 80px; }
+    .input-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .input-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
 
-    .input-group label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      margin-bottom: 6px;
-      color: var(--text);
-    }
-
-    .input-group input {
-      width: 100%;
-      padding: 12px 14px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      color: var(--text);
-      transition: border-color 0.2s;
-      outline: none;
-    }
-
-    .input-group input:focus { border-color: var(--teal); }
-    .input-group input::placeholder { color: #A0AEC0; }
-
-    /* ── BUTTON ── */
-    .btn-primary {
-      width: 100%;
-      padding: 14px;
-      background: var(--teal);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
+    /* BUTTONS */
+    .btn-primary { width: 100%; padding: 14px; background: var(--teal); color: white; border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
     .btn-primary:hover:not(:disabled) { background: var(--teal-dark); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-secondary { padding: 10px 18px; background: var(--white); color: var(--teal); border: 2px solid var(--teal); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+    .btn-secondary:hover { background: var(--teal-light); }
+    .btn-danger { padding: 6px 10px; background: transparent; color: var(--error); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .btn-danger:hover { border-color: var(--error); background: #FFF5F5; }
 
-    /* ── STATUS ── */
-    .status-box {
-      border-radius: 10px;
-      padding: 16px 18px;
-      font-size: 14px;
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-top: 16px;
-    }
+    /* QUESTÕES */
+    .questoes-lista { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+    .questao-item { border: 1px solid var(--border); border-radius: 10px; padding: 16px; background: var(--bg); position: relative; }
+    .questao-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .questao-num { width: 28px; height: 28px; background: var(--teal); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .questao-tipo-badge { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 20px; background: var(--teal-light); color: var(--teal); }
+    .questao-actions { margin-left: auto; display: flex; gap: 6px; }
+    .questao-enunciado { font-size: 13px; color: var(--text); line-height: 1.5; }
+    .alternativas-lista { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+    .alternativa-item { font-size: 13px; color: var(--text-muted); padding: 4px 0; }
 
+    /* MODAL */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .modal { background: var(--white); border-radius: 16px; padding: 28px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
+    .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+    .modal-footer { display: flex; gap: 12px; margin-top: 20px; }
+    .modal-footer .btn-primary { flex: 1; }
+    .btn-cancel { padding: 14px 20px; background: transparent; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; }
+    .btn-cancel:hover { border-color: var(--text-muted); }
+
+    /* TIPO SELECTOR */
+    .tipo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px; }
+    .tipo-btn { padding: 14px; border: 2px solid var(--border); border-radius: 10px; background: var(--white); cursor: pointer; text-align: center; transition: all 0.2s; }
+    .tipo-btn:hover { border-color: var(--teal); background: var(--teal-light); }
+    .tipo-btn.active { border-color: var(--teal); background: var(--teal-light); }
+    .tipo-btn .t-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+    .tipo-btn .t-label { font-size: 12px; font-weight: 600; }
+    .tipo-btn .t-desc { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+    /* ALTERNATIVAS EDITOR */
+    .alt-editor { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .alt-row { display: flex; align-items: center; gap: 8px; }
+    .alt-letra { width: 28px; height: 28px; background: var(--border); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+
+    /* STATUS */
+    .status-box { border-radius: 10px; padding: 16px 18px; font-size: 14px; display: flex; align-items: flex-start; gap: 12px; margin-top: 16px; }
     .status-box.loading { background: #EBF8FF; color: #2B6CB0; border: 1px solid #BEE3F8; }
     .status-box.success { background: #F0FFF4; color: #276749; border: 1px solid #9AE6B4; }
     .status-box.error { background: #FFF5F5; color: #C53030; border: 1px solid #FEB2B2; }
-
-    .status-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-    .status-text { flex: 1; }
+    .status-icon { font-size: 18px; flex-shrink: 0; }
     .status-text strong { display: block; font-weight: 600; margin-bottom: 3px; }
+    .result-link { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; padding: 8px 14px; background: var(--success); color: white; text-decoration: none; border-radius: 6px; font-size: 13px; font-weight: 600; }
 
-    .result-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 10px;
-      padding: 8px 14px;
-      background: var(--success);
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-    }
+    /* SPINNER */
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.4); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .result-link:hover { opacity: 0.9; }
-
-    /* ── HISTÓRICO ── */
-    .historico-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
+    /* HISTÓRICO */
+    .historico-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
     .historico-item:last-child { border-bottom: none; }
-
-    .hist-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      background: var(--teal-light);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      flex-shrink: 0;
-    }
-
+    .hist-icon { width: 36px; height: 36px; border-radius: 8px; background: var(--teal-light); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .hist-info { flex: 1; min-width: 0; }
     .hist-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .hist-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .hist-link { font-size: 12px; color: var(--teal); text-decoration: none; font-weight: 500; }
+    .empty-hist { text-align: center; padding: 24px; color: var(--text-muted); font-size: 14px; }
 
-    .hist-link {
-      font-size: 12px;
-      color: var(--teal);
-      text-decoration: none;
-      font-weight: 500;
-      flex-shrink: 0;
-    }
-
-    .hist-link:hover { text-decoration: underline; }
-
-    .empty-hist {
-      text-align: center;
-      padding: 24px;
-      color: var(--text-muted);
-      font-size: 14px;
-    }
-
-    /* ── SPINNER ── */
-    .spinner {
-      width: 18px;
-      height: 18px;
-      border: 2px solid rgba(255,255,255,0.4);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── STEPS ── */
-    .steps {
-      display: flex;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-top: 8px;
-    }
-
-    .step { display: flex; align-items: center; gap: 4px; }
-    .step.active { color: var(--teal); font-weight: 600; }
-    .step.done { color: var(--success); }
-    .step-sep { color: var(--border); }
-
-    /* ── HIDDEN ── */
     .hidden { display: none !important; }
-
     @media (max-width: 480px) {
-      .modelo-grid { grid-template-columns: 1fr; }
-      main { padding: 0 16px; margin: 24px auto; }
+      .modelo-grid, .tipo-grid { grid-template-columns: 1fr 1fr; }
+      .input-row, .input-row-3 { grid-template-columns: 1fr; }
+      main { padding: 0 16px 60px; margin: 24px auto; }
       .card { padding: 20px; }
     }
   </style>
@@ -410,7 +149,7 @@
   <div class="login-card">
     <div class="login-logo">📄</div>
     <h1>Formatadoc</h1>
-    <p>Formatação automática de avaliações<br>Colégio Arena</p>
+    <p>Criador de avaliações padronizadas<br>Colégio Arena</p>
     <button class="btn-google" onclick="fazerLogin()">
       <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
       Entrar com Google
@@ -422,9 +161,7 @@
 <!-- APP -->
 <div id="app-screen" class="hidden">
   <header>
-    <div class="header-brand">
-      <span>📄</span> Formatadoc
-    </div>
+    <div class="header-brand"><span>📄</span> Formatadoc</div>
     <div class="header-user">
       <div class="user-avatar" id="user-initials">?</div>
       <span class="user-name" id="user-name-display">—</span>
@@ -433,12 +170,12 @@
   </header>
 
   <main>
-    <div class="page-title">Formatar Avaliação</div>
-    <div class="page-subtitle">Cole o link do Google Docs e escolha o modelo para formatar automaticamente.</div>
+    <div class="page-title">Nova Avaliação</div>
+    <div class="page-subtitle">Preencha os dados, adicione as questões e gere o documento formatado.</div>
 
     <!-- PASSO 1: MODELO -->
     <div class="card">
-      <div class="card-title">1. Selecione o modelo</div>
+      <div class="card-title">1. Modelo</div>
       <div class="modelo-grid">
         <button class="modelo-btn" onclick="selecionarModelo('infantil', this)">
           <span class="emoji">🌱</span>
@@ -458,465 +195,412 @@
       </div>
     </div>
 
-    <!-- PASSO 2: LINK -->
+    <!-- PASSO 2: DADOS -->
     <div class="card">
-      <div class="card-title">2. Link do documento</div>
-      <div class="input-group">
-        <label for="doc-link">Link do Google Docs (do professor)</label>
-        <input
-          type="url"
-          id="doc-link"
-          placeholder="https://docs.google.com/document/d/..."
-          oninput="validarLink()"
-        />
+      <div class="card-title">2. Dados da avaliação</div>
+      <div class="input-row">
+        <div class="input-group">
+          <label>Disciplina</label>
+          <input type="text" id="disciplina" placeholder="Ex: Matemática" oninput="validarFormulario()" />
+        </div>
+        <div class="input-group">
+          <label>Número da avaliação</label>
+          <select id="num-avaliacao" onchange="validarFormulario()">
+            <option value="">Selecione</option>
+            <option value="1">Avaliação 1</option>
+            <option value="2">Avaliação 2</option>
+            <option value="3">Avaliação 3</option>
+            <option value="4">Avaliação 4</option>
+            <option value="R">Recuperação</option>
+          </select>
+        </div>
       </div>
-      <button class="btn-primary" id="btn-formatar" onclick="formatarDocumento()" disabled>
-        <span id="btn-texto">Formatar documento</span>
+      <div class="input-row-3">
+        <div class="input-group">
+          <label>Ano / Série</label>
+          <input type="text" id="ano-serie" placeholder="Ex: 5° ANO" oninput="validarFormulario()" />
+        </div>
+        <div class="input-group">
+          <label>Bimestre</label>
+          <select id="bimestre" onchange="validarFormulario()">
+            <option value="">Selecione</option>
+            <option value="1°">1° Bimestre</option>
+            <option value="2°">2° Bimestre</option>
+            <option value="3°">3° Bimestre</option>
+            <option value="4°">4° Bimestre</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label>Valor da prova</label>
+          <input type="text" id="valor-prova" placeholder="Ex: 8,0" oninput="validarFormulario()" />
+        </div>
+      </div>
+    </div>
+
+    <!-- PASSO 3: QUESTÕES -->
+    <div class="card">
+      <div class="card-title">3. Questões</div>
+      <div class="questoes-lista" id="questoes-lista">
+        <div class="empty-hist" id="questoes-empty">Nenhuma questão adicionada ainda.</div>
+      </div>
+      <button class="btn-secondary" onclick="abrirModalQuestao()">
+        + Adicionar questão
+      </button>
+    </div>
+
+    <!-- GERAR -->
+    <div class="card">
+      <button class="btn-primary" id="btn-gerar" onclick="gerarAvaliacao()" disabled>
+        <span id="btn-texto">Gerar avaliação no Google Docs</span>
         <div class="spinner hidden" id="btn-spinner"></div>
       </button>
-
-      <!-- STATUS -->
       <div id="status-area"></div>
     </div>
 
     <!-- HISTÓRICO -->
     <div class="card">
       <div class="card-title">Histórico recente</div>
-      <div id="historico-lista">
-        <div class="empty-hist">Nenhum documento formatado ainda.</div>
-      </div>
+      <div id="historico-lista"><div class="empty-hist">Nenhuma avaliação gerada ainda.</div></div>
     </div>
   </main>
 </div>
 
+<!-- MODAL QUESTÃO -->
+<div class="modal-overlay hidden" id="modal-overlay">
+  <div class="modal">
+    <div class="modal-title">Adicionar Questão</div>
+
+    <div class="card-title">Tipo de questão</div>
+    <div class="tipo-grid">
+      <button class="tipo-btn active" onclick="selecionarTipo('dissertativa', this)">
+        <span class="t-icon">✍️</span>
+        <span class="t-label">Dissertativa</span>
+        <span class="t-desc">Resposta aberta</span>
+      </button>
+      <button class="tipo-btn" onclick="selecionarTipo('multipla', this)">
+        <span class="t-icon">🔘</span>
+        <span class="t-label">Múltipla escolha</span>
+        <span class="t-desc">A, B, C, D, E</span>
+      </button>
+      <button class="tipo-btn" onclick="selecionarTipo('vf', this)">
+        <span class="t-icon">✅</span>
+        <span class="t-label">Verdadeiro/Falso</span>
+        <span class="t-desc">V ou F</span>
+      </button>
+      <button class="tipo-btn" onclick="selecionarTipo('lacuna', this)">
+        <span class="t-icon">📝</span>
+        <span class="t-label">Completar lacuna</span>
+        <span class="t-desc">Preencher espaços</span>
+      </button>
+    </div>
+
+    <div class="input-group">
+      <label>Enunciado da questão</label>
+      <textarea id="modal-enunciado" placeholder="Digite o enunciado da questão..." rows="3"></textarea>
+    </div>
+
+    <div class="input-group">
+      <label>Valor da questão (opcional)</label>
+      <input type="text" id="modal-valor" placeholder="Ex: 1,0" style="max-width:140px" />
+    </div>
+
+    <!-- ALTERNATIVAS (só para múltipla escolha) -->
+    <div id="alternativas-section" class="hidden">
+      <div class="card-title" style="margin-top:16px">Alternativas</div>
+      <div class="alt-editor">
+        <div class="alt-row"><span class="alt-letra">A</span><input type="text" id="alt-a" placeholder="Alternativa A" class="input-group" style="flex:1;padding:8px 12px;border:2px solid var(--border);border-radius:6px;font-family:Inter,sans-serif;font-size:13px;outline:none;" /></div>
+        <div class="alt-row"><span class="alt-letra">B</span><input type="text" id="alt-b" placeholder="Alternativa B" class="input-group" style="flex:1;padding:8px 12px;border:2px solid var(--border);border-radius:6px;font-family:Inter,sans-serif;font-size:13px;outline:none;" /></div>
+        <div class="alt-row"><span class="alt-letra">C</span><input type="text" id="alt-c" placeholder="Alternativa C" class="input-group" style="flex:1;padding:8px 12px;border:2px solid var(--border);border-radius:6px;font-family:Inter,sans-serif;font-size:13px;outline:none;" /></div>
+        <div class="alt-row"><span class="alt-letra">D</span><input type="text" id="alt-d" placeholder="Alternativa D" class="input-group" style="flex:1;padding:8px 12px;border:2px solid var(--border);border-radius:6px;font-family:Inter,sans-serif;font-size:13px;outline:none;" /></div>
+        <div class="alt-row"><span class="alt-letra">E</span><input type="text" id="alt-e" placeholder="Alternativa E (opcional)" class="input-group" style="flex:1;padding:8px 12px;border:2px solid var(--border);border-radius:6px;font-family:Inter,sans-serif;font-size:13px;outline:none;" /></div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-primary" onclick="salvarQuestao()" style="flex:1">Adicionar questão</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // ── CONFIG ──
   const CLIENT_ID = '450030397976-647mvcl7sla23dhnjr9i3ru11lofolr0.apps.googleusercontent.com';
   const SCOPES = 'openid email profile https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive';
 
-  // Padrões de formatação por modelo
-  const MODELOS = {
-    infantil: {
-      nome: 'Ed. Infantil',
-      fonte: 'Arial',
-      tamanhoCorpo: 14,
-      tamanhoTitulo: 16,
-      espacamento: 1.5,
-      margens: { top: 72, bottom: 72, left: 72, right: 72 }
-    },
-    fund1: {
-      nome: 'Fundamental I',
-      fonte: 'Arial',
-      tamanhoCorpo: 12,
-      tamanhoTitulo: 14,
-      espacamento: 1.15,
-      margens: { top: 72, bottom: 72, left: 72, right: 72 }
-    },
-    fund2: {
-      nome: 'Fundamental II',
-      fonte: 'Arial',
-      tamanhoCorpo: 12,
-      tamanhoTitulo: 13,
-      espacamento: 1.15,
-      margens: { top: 72, bottom: 72, left: 72, right: 72 }
-    }
+  const TEMPLATE_IDS = {
+    infantil: '1lLMzhMY3G9yE--5SZbY5tMoGjKRtr8Ol6TWOi3yNc9w',
+    fund1:    '1lLMzhMY3G9yE--5SZbY5tMoGjKRtr8Ol6TWOi3yNc9w',
+    fund2:    '1lLMzhMY3G9yE--5SZbY5tMoGjKRtr8Ol6TWOi3yNc9w'
   };
 
   let tokenAcesso = null;
   let tokenClient = null;
   let modeloSelecionado = null;
+  let tipoQuestaoAtual = 'dissertativa';
+  let questoes = [];
   let historico = JSON.parse(localStorage.getItem('formatadoc_historico') || '[]');
 
-  // ── AUTH — Google Identity Services ──
+  // ── AUTH ──
   function initGoogleAuth() {
     tokenClient = google.accounts.oauth2.initTokenClient({
-      client_id: CLIENT_ID,
-      scope: SCOPES,
+      client_id: CLIENT_ID, scope: SCOPES,
       callback: async (response) => {
-        console.log('OAuth response:', JSON.stringify(response));
-        if (response.error) {
-          console.error('Erro OAuth:', response.error);
-          alert('Erro ao fazer login: ' + response.error);
-          return;
-        }
-        if (!response.access_token) {
-          console.error('Token não recebido na resposta');
-          return;
-        }
+        if (response.error || !response.access_token) return;
         tokenAcesso = response.access_token;
-        console.log('Token recebido, carregando usuário...');
-        const exp = Date.now() + (parseInt(response.expires_in || 3600) * 1000);
         localStorage.setItem('formatadoc_token', tokenAcesso);
-        localStorage.setItem('formatadoc_token_exp', String(exp));
+        localStorage.setItem('formatadoc_token_exp', String(Date.now() + (parseInt(response.expires_in||3600)*1000)));
         await carregarUsuario();
       }
     });
-
-    // Verificar token salvo
-    const savedToken = localStorage.getItem('formatadoc_token');
-    const savedExp = localStorage.getItem('formatadoc_token_exp');
-    if (savedToken && savedExp && Date.now() < parseInt(savedExp)) {
-      tokenAcesso = savedToken;
-      mostrarAppTela();
-      carregarUsuario();
-    } else {
-      mostrarLogin();
-    }
+    const t = localStorage.getItem('formatadoc_token');
+    const e = localStorage.getItem('formatadoc_token_exp');
+    if (t && e && Date.now() < parseInt(e)) { tokenAcesso = t; mostrarAppTela(); carregarUsuario(); }
+    else mostrarLogin();
   }
 
-  function fazerLogin() {
-    if (!tokenClient) {
-      alert('Aguarde a página carregar completamente e tente novamente.');
-      return;
-    }
-    tokenClient.requestAccessToken({ prompt: 'consent', scope: SCOPES });
-  }
-
+  function fazerLogin() { if (tokenClient) tokenClient.requestAccessToken({ prompt: 'consent', scope: SCOPES }); }
   function fazerLogout() {
-    if (tokenAcesso) {
-      google.accounts.oauth2.revoke(tokenAcesso);
-    }
+    if (tokenAcesso) google.accounts.oauth2.revoke(tokenAcesso);
     tokenAcesso = null;
-    localStorage.removeItem('formatadoc_token');
-    localStorage.removeItem('formatadoc_token_exp');
+    localStorage.removeItem('formatadoc_token'); localStorage.removeItem('formatadoc_token_exp');
     mostrarLogin();
   }
-
-  function mostrarLogin() {
-    document.getElementById('login-screen').classList.remove('hidden');
-    document.getElementById('app-screen').classList.add('hidden');
-  }
-
-  function mostrarAppTela() {
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('app-screen').classList.remove('hidden');
-    renderizarHistorico();
-  }
+  function mostrarLogin() { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('app-screen').classList.add('hidden'); }
+  function mostrarAppTela() { document.getElementById('login-screen').classList.add('hidden'); document.getElementById('app-screen').classList.remove('hidden'); renderizarHistorico(); }
 
   async function carregarUsuario() {
-    console.log('carregarUsuario chamado, token:', tokenAcesso ? 'presente' : 'ausente');
-    if (!tokenAcesso) {
-      mostrarLogin();
-      return;
-    }
+    if (!tokenAcesso) { mostrarLogin(); return; }
     try {
-      const res = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=' + tokenAcesso);
-      console.log('tokeninfo status:', res.status);
-      if (!res.ok) {
-        console.error('Erro tokeninfo:', res.status);
-        localStorage.removeItem('formatadoc_token');
-        localStorage.removeItem('formatadoc_token_exp');
-        tokenAcesso = null;
-        mostrarLogin();
-        return;
-      }
-      const user = await res.json();
-      console.log('Usuário email:', user.email);
-      if (!user.email) {
-        // Tentar userinfo como fallback
-        const res2 = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
-          headers: { 'Authorization': 'Bearer ' + tokenAcesso }
-        });
-        const user2 = await res2.json();
-        user.email = user2.email;
-        user.given_name = user2.given_name;
-        user.family_name = user2.family_name;
-      }
-
-      if (!user.email || !user.email.endsWith('@colegioarena.com.br')) {
-        mostrarStatus('error', '⛔ Acesso negado', 'Este app é restrito a contas @colegioarena.com.br.');
-        setTimeout(fazerLogout, 3000);
-        return;
-      }
-
+      const r = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=' + tokenAcesso);
+      if (!r.ok) { tokenAcesso = null; mostrarLogin(); return; }
+      const u = await r.json();
+      if (!u.email?.endsWith('@colegioarena.com.br')) { setTimeout(fazerLogout, 2000); return; }
       mostrarAppTela();
-      const iniciais = (user.given_name?.[0] || '') + (user.family_name?.[0] || '');
-      document.getElementById('user-initials').textContent = iniciais.toUpperCase() || '?';
-      document.getElementById('user-name-display').textContent = user.given_name || user.email;
-    } catch (e) {
-      console.error('Erro ao carregar usuário:', e);
-      mostrarLogin();
-    }
+      const r2 = await fetch('https://openidconnect.googleapis.com/v1/userinfo', { headers: { Authorization: 'Bearer ' + tokenAcesso } });
+      const info = await r2.json();
+      document.getElementById('user-initials').textContent = ((info.given_name?.[0]||'')+(info.family_name?.[0]||'')).toUpperCase()||'?';
+      document.getElementById('user-name-display').textContent = info.given_name || u.email;
+    } catch(e) { mostrarLogin(); }
   }
 
   // ── MODELO ──
-  function selecionarModelo(modelo, btn) {
+  function selecionarModelo(m, btn) {
     document.querySelectorAll('.modelo-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    modeloSelecionado = modelo;
-    validarFormulario();
-  }
-
-  function validarLink() {
-    validarFormulario();
+    btn.classList.add('active'); modeloSelecionado = m; validarFormulario();
   }
 
   function validarFormulario() {
-    const link = document.getElementById('doc-link').value.trim();
-    const linkValido = link.includes('docs.google.com/document');
-    const btn = document.getElementById('btn-formatar');
-    btn.disabled = !(linkValido && modeloSelecionado);
+    const ok = modeloSelecionado &&
+      document.getElementById('disciplina').value.trim() &&
+      document.getElementById('num-avaliacao').value &&
+      document.getElementById('ano-serie').value.trim() &&
+      document.getElementById('bimestre').value &&
+      document.getElementById('valor-prova').value.trim() &&
+      questoes.length > 0;
+    document.getElementById('btn-gerar').disabled = !ok;
   }
 
-  function extrairDocId(url) {
-    const match = url.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
-    return match ? match[1] : null;
+  // ── MODAL QUESTÃO ──
+  function abrirModalQuestao() {
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    document.getElementById('modal-enunciado').value = '';
+    document.getElementById('modal-valor').value = '';
+    document.getElementById('alt-a').value = '';
+    document.getElementById('alt-b').value = '';
+    document.getElementById('alt-c').value = '';
+    document.getElementById('alt-d').value = '';
+    document.getElementById('alt-e').value = '';
+    selecionarTipo('dissertativa', document.querySelector('.tipo-btn'));
   }
 
-  // ── FORMATAR ──
-  async function formatarDocumento() {
-    const link = document.getElementById('doc-link').value.trim();
-    const docId = extrairDocId(link);
+  function fecharModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
 
-    if (!docId) {
-      mostrarStatus('error', 'Link inválido', 'Cole um link válido do Google Docs.');
-      return;
-    }
+  function selecionarTipo(tipo, btn) {
+    document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    tipoQuestaoAtual = tipo;
+    document.getElementById('alternativas-section').classList.toggle('hidden', tipo !== 'multipla');
+  }
 
-    if (!modeloSelecionado) {
-      mostrarStatus('error', 'Selecione um modelo', 'Escolha Infantil, Fundamental I ou Fundamental II.');
-      return;
+  function salvarQuestao() {
+    const enunciado = document.getElementById('modal-enunciado').value.trim();
+    if (!enunciado) { alert('Digite o enunciado da questão.'); return; }
+    const questao = {
+      tipo: tipoQuestaoAtual,
+      enunciado,
+      valor: document.getElementById('modal-valor').value.trim(),
+      alternativas: tipoQuestaoAtual === 'multipla' ? {
+        a: document.getElementById('alt-a').value.trim(),
+        b: document.getElementById('alt-b').value.trim(),
+        c: document.getElementById('alt-c').value.trim(),
+        d: document.getElementById('alt-d').value.trim(),
+        e: document.getElementById('alt-e').value.trim()
+      } : null
+    };
+    questoes.push(questao);
+    fecharModal();
+    renderizarQuestoes();
+    validarFormulario();
+  }
+
+  function removerQuestao(idx) {
+    questoes.splice(idx, 1);
+    renderizarQuestoes();
+    validarFormulario();
+  }
+
+  const TIPO_LABELS = { dissertativa: 'Dissertativa', multipla: 'Múltipla escolha', vf: 'V / F', lacuna: 'Lacuna' };
+  const LETRAS = ['A', 'B', 'C', 'D', 'E'];
+
+  function renderizarQuestoes() {
+    const lista = document.getElementById('questoes-lista');
+    const empty = document.getElementById('questoes-empty');
+    if (questoes.length === 0) {
+      empty.classList.remove('hidden'); lista.innerHTML = ''; lista.appendChild(empty); return;
     }
+    empty.classList.add('hidden');
+    lista.innerHTML = questoes.map((q, i) => {
+      let extra = '';
+      if (q.tipo === 'multipla' && q.alternativas) {
+        const alts = Object.entries(q.alternativas).filter(([,v]) => v);
+        extra = `<div class="alternativas-lista">${alts.map(([k,v]) => `<div class="alternativa-item">${k.toUpperCase()}) ${v}</div>`).join('')}</div>`;
+      } else if (q.tipo === 'dissertativa') {
+        extra = `<div style="margin-top:8px;border-bottom:1px solid var(--border);padding-top:20px;font-size:11px;color:var(--text-muted);">Espaço para resposta</div>`;
+      } else if (q.tipo === 'vf') {
+        extra = `<div style="margin-top:8px;font-size:13px;color:var(--text-muted);">( ) Verdadeiro &nbsp;&nbsp; ( ) Falso</div>`;
+      } else if (q.tipo === 'lacuna') {
+        extra = `<div style="margin-top:6px;font-size:12px;color:var(--text-muted);">Resposta: ___________________________</div>`;
+      }
+      const valorBadge = q.valor ? `<span style="font-size:11px;color:var(--text-muted);margin-left:auto;">(${q.valor})</span>` : '';
+      return `
+        <div class="questao-item">
+          <div class="questao-header">
+            <div class="questao-num">${i+1}</div>
+            <span class="questao-tipo-badge">${TIPO_LABELS[q.tipo]}</span>
+            ${valorBadge}
+            <div class="questao-actions">
+              <button class="btn-danger" onclick="removerQuestao(${i})">✕ Remover</button>
+            </div>
+          </div>
+          <div class="questao-enunciado">${q.enunciado}</div>
+          ${extra}
+        </div>`;
+    }).join('');
+  }
+
+  // ── GERAR AVALIAÇÃO ──
+  async function gerarAvaliacao() {
+    const disciplina = document.getElementById('disciplina').value.trim().toUpperCase();
+    const numAv = document.getElementById('num-avaliacao').value;
+    const anoSerie = document.getElementById('ano-serie').value.trim().toUpperCase();
+    const bimestre = document.getElementById('bimestre').value;
+    const valor = document.getElementById('valor-prova').value.trim();
+    const titulo = `AVALIAÇÃO ${numAv} DE ${disciplina}`;
+    const subtitulo = `${anoSerie} - ${bimestre} BIMESTRE`;
+    const nomeDoc = `${titulo} - ${anoSerie} - Formatado`;
 
     setBotaoCarregando(true);
-    mostrarStatus('loading', 'Processando...', 'Lendo o documento original.');
+    mostrarStatus('loading', 'Criando documento...', 'Copiando template da escola.');
 
     try {
-      // 1. Buscar o documento original
-      mostrarSteps(1);
-      const docOriginal = await buscarDocumento(docId);
-      const nomeOriginal = docOriginal.title;
+      // 1. Copiar template
+      const templateId = TEMPLATE_IDS[modeloSelecionado];
+      const copia = await apiPost(`https://www.googleapis.com/drive/v3/files/${templateId}/copy`, { name: nomeDoc });
 
-      // 2. Criar cópia
-      mostrarStatus('loading', 'Criando cópia...', 'Copiando o documento para não alterar o original.');
-      mostrarSteps(2);
-      const copia = await copiarDocumento(docId, nomeOriginal + ' - Formatado');
+      // 2. Substituir marcadores
+      mostrarStatus('loading', 'Inserindo dados...', 'Preenchendo cabeçalho e questões.');
+      const conteudo = montarConteudoQuestoes();
 
-      // 3. Aplicar formatação
-      mostrarStatus('loading', 'Aplicando formatação...', 'Ajustando fonte, tamanho e espaçamento.');
-      mostrarSteps(3);
-      await aplicarFormatacao(copia.id, docOriginal, modeloSelecionado);
+      const requests = [
+        { replaceAllText: { containsText: { text: '{{TITULO}}', matchCase: true }, replaceText: titulo } },
+        { replaceAllText: { containsText: { text: '{{ANO}}', matchCase: true }, replaceText: anoSerie } },
+        { replaceAllText: { containsText: { text: '{{BIMESTRE}}', matchCase: true }, replaceText: bimestre } },
+        { replaceAllText: { containsText: { text: '{{VALOR}}', matchCase: true }, replaceText: valor } },
+        { replaceAllText: { containsText: { text: '{{DISCIPLINA}}', matchCase: true }, replaceText: disciplina } },
+        { replaceAllText: { containsText: { text: '{{SUBTITULO}}', matchCase: true }, replaceText: subtitulo } },
+        { replaceAllText: { containsText: { text: '{{CONTEUDO}}', matchCase: true }, replaceText: conteudo } },
+      ];
 
-      // 4. Sucesso
-      const urlFormatado = `https://docs.google.com/document/d/${copia.id}/edit`;
+      await apiPost(`https://docs.googleapis.com/v1/documents/${copia.id}:batchUpdate`, { requests });
+
+      // 3. Sucesso
+      const urlFinal = `https://docs.google.com/document/d/${copia.id}/edit`;
       setBotaoCarregando(false);
-      mostrarSucesso(nomeOriginal, urlFormatado, copia.id);
-      salvarHistorico(nomeOriginal, urlFormatado, modeloSelecionado);
-      document.getElementById('doc-link').value = '';
-      modeloSelecionado = null;
-      document.querySelectorAll('.modelo-btn').forEach(b => b.classList.remove('active'));
-      validarFormulario();
+      mostrarSucesso(nomeDoc, urlFinal);
+      salvarHistorico(nomeDoc, urlFinal, modeloSelecionado);
 
-    } catch (err) {
+    } catch(err) {
       setBotaoCarregando(false);
       console.error(err);
-      if (err.status === 403 || err.status === 401) {
-        mostrarStatus('error', 'Sem permissão', 'Certifique-se de que o documento está compartilhado com sua conta do Google.');
+      mostrarStatus('error', 'Erro ao gerar', err.message || 'Verifique se o template está configurado e tente novamente.');
+    }
+  }
+
+  function montarConteudoQuestoes() {
+    return questoes.map((q, i) => {
+      const num = i + 1;
+      const valorStr = q.valor ? ` (${q.valor})` : '';
+      let texto = `${num}) ${q.enunciado}${valorStr}\n`;
+      if (q.tipo === 'multipla' && q.alternativas) {
+        const alts = Object.entries(q.alternativas).filter(([,v]) => v);
+        texto += alts.map(([k,v]) => `${k.toUpperCase()}) ${v}`).join('\n') + '\n';
+      } else if (q.tipo === 'vf') {
+        texto += '( ) Verdadeiro     ( ) Falso\n';
+      } else if (q.tipo === 'lacuna') {
+        texto += 'Resposta: ___________________________\n';
       } else {
-        mostrarStatus('error', 'Erro ao formatar', err.message || 'Tente novamente em alguns instantes.');
+        texto += '\n\n\n';
       }
-    }
+      return texto;
+    }).join('\n');
   }
 
-  async function buscarDocumento(docId) {
-    const res = await fetch(`https://docs.googleapis.com/v1/documents/${docId}`, {
-      headers: { Authorization: 'Bearer ' + tokenAcesso }
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw { status: res.status, message: err.error?.message || 'Erro ao ler documento' };
-    }
-    return res.json();
+  // ── API ──
+  async function apiGet(url) {
+    const r = await fetch(url, { headers: { Authorization: 'Bearer ' + tokenAcesso } });
+    if (!r.ok) { const e = await r.json().catch(()=>({})); throw { status: r.status, message: e.error?.message||'Erro API' }; }
+    return r.json();
+  }
+  async function apiPost(url, body) {
+    const r = await fetch(url, { method: 'POST', headers: { Authorization: 'Bearer ' + tokenAcesso, 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    if (!r.ok) { const e = await r.json().catch(()=>({})); throw { status: r.status, message: e.error?.message||'Erro API' }; }
+    return r.json();
   }
 
-  async function copiarDocumento(docId, novoNome) {
-    const res = await fetch(`https://www.googleapis.com/drive/v3/files/${docId}/copy`, {
-      method: 'POST',
-      headers: {
-        Authorization: 'Bearer ' + tokenAcesso,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name: novoNome })
-    });
-    if (!res.ok) {
-      const err = await res.json();
-      throw { status: res.status, message: err.error?.message || 'Erro ao copiar documento' };
-    }
-    return res.json();
-  }
-
-  async function aplicarFormatacao(docId, docOriginal, modeloKey) {
-    const modelo = MODELOS[modeloKey];
-    const requests = [];
-    const body = docOriginal.body;
-
-    // Aplicar fonte e tamanho em todos os parágrafos
-    for (const element of body.content || []) {
-      if (!element.paragraph) continue;
-      const para = element.paragraph;
-      const startIndex = element.startIndex || 0;
-      const endIndex = element.endIndex || 0;
-      if (endIndex <= startIndex) continue;
-
-      const style = para.paragraphStyle?.namedStyleType || 'NORMAL_TEXT';
-      const eTitulo = style === 'HEADING_1' || style === 'HEADING_2' || style === 'TITLE';
-      const tamanho = eTitulo ? modelo.tamanhoTitulo : modelo.tamanhoCorpo;
-
-      // Formatar texto
-      for (const elem of para.elements || []) {
-        if (!elem.textRun) continue;
-        const ts = elem.startIndex;
-        const te = elem.endIndex;
-        if (te <= ts) continue;
-
-        requests.push({
-          updateTextStyle: {
-            range: { startIndex: ts, endIndex: te },
-            textStyle: {
-              weightedFontFamily: { fontFamily: modelo.fonte },
-              fontSize: { magnitude: tamanho, unit: 'PT' }
-            },
-            fields: 'weightedFontFamily,fontSize'
-          }
-        });
-      }
-
-      // Espaçamento entre linhas
-      if (endIndex > startIndex + 1) {
-        requests.push({
-          updateParagraphStyle: {
-            range: { startIndex, endIndex },
-            paragraphStyle: {
-              lineSpacing: modelo.espacamento * 100,
-              spaceAbove: { magnitude: eTitulo ? 12 : 6, unit: 'PT' },
-              spaceBelow: { magnitude: eTitulo ? 6 : 4, unit: 'PT' }
-            },
-            fields: 'lineSpacing,spaceAbove,spaceBelow'
-          }
-        });
-      }
-    }
-
-    if (requests.length === 0) return;
-
-    // Dividir em batches de 100
-    for (let i = 0; i < requests.length; i += 100) {
-      const batch = requests.slice(i, i + 100);
-      const res = await fetch(`https://docs.googleapis.com/v1/documents/${docId}:batchUpdate`, {
-        method: 'POST',
-        headers: {
-          Authorization: 'Bearer ' + tokenAcesso,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ requests: batch })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw { status: res.status, message: err.error?.message || 'Erro ao aplicar formatação' };
-      }
-    }
-  }
-
-  // ── UI HELPERS ──
+  // ── UI ──
   function setBotaoCarregando(loading) {
-    const btn = document.getElementById('btn-formatar');
-    const texto = document.getElementById('btn-texto');
-    const spinner = document.getElementById('btn-spinner');
-    btn.disabled = loading;
-    if (loading) {
-      texto.textContent = 'Formatando...';
-      spinner.classList.remove('hidden');
-    } else {
-      texto.textContent = 'Formatar documento';
-      spinner.classList.add('hidden');
-    }
+    document.getElementById('btn-gerar').disabled = loading;
+    document.getElementById('btn-texto').textContent = loading ? 'Gerando...' : 'Gerar avaliação no Google Docs';
+    document.getElementById('btn-spinner').classList.toggle('hidden', !loading);
   }
-
-  function mostrarStatus(tipo, titulo, mensagem) {
-    const icons = { loading: '⏳', success: '✅', error: '❌' };
-    document.getElementById('status-area').innerHTML = `
-      <div class="status-box ${tipo}">
-        <span class="status-icon">${icons[tipo]}</span>
-        <div class="status-text">
-          <strong>${titulo}</strong>
-          ${mensagem}
-        </div>
-      </div>
-    `;
+  function mostrarStatus(tipo, titulo, msg) {
+    const icons = { loading:'⏳', success:'✅', error:'❌' };
+    document.getElementById('status-area').innerHTML = `<div class="status-box ${tipo}"><span class="status-icon">${icons[tipo]}</span><div class="status-text"><strong>${titulo}</strong>${msg}</div></div>`;
   }
-
-  function mostrarSucesso(nome, url, id) {
-    document.getElementById('status-area').innerHTML = `
-      <div class="status-box success">
-        <span class="status-icon">✅</span>
-        <div class="status-text">
-          <strong>Documento formatado com sucesso!</strong>
-          "${nome} - Formatado" está pronto no seu Drive.
-          <br>
-          <a class="result-link" href="${url}" target="_blank">📄 Abrir documento formatado</a>
-        </div>
-      </div>
-    `;
+  function mostrarSucesso(nome, url) {
+    document.getElementById('status-area').innerHTML = `<div class="status-box success"><span class="status-icon">✅</span><div class="status-text"><strong>Avaliação gerada com sucesso!</strong>"${nome}" está no seu Drive.<br><a class="result-link" href="${url}" target="_blank">📄 Abrir avaliação</a></div></div>`;
   }
-
-  function mostrarSteps(step) {
-    const labels = ['Lendo original', 'Copiando', 'Formatando'];
-    const html = labels.map((l, i) => {
-      const cls = i + 1 < step ? 'done' : i + 1 === step ? 'active' : '';
-      const icon = i + 1 < step ? '✓' : i + 1 === step ? '●' : '○';
-      return `<span class="step ${cls}">${icon} ${l}</span>${i < 2 ? '<span class="step-sep">→</span>' : ''}`;
-    }).join('');
-    document.getElementById('status-area').innerHTML = `
-      <div class="status-box loading">
-        <span class="status-icon">⏳</span>
-        <div class="status-text">
-          <strong>Processando...</strong>
-          <div class="steps">${html}</div>
-        </div>
-      </div>
-    `;
-  }
-
-  // ── HISTÓRICO ──
   function salvarHistorico(nome, url, modelo) {
-    historico.unshift({
-      nome,
-      url,
-      modelo: MODELOS[modelo].nome,
-      data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
-    });
+    const nomes = { infantil: 'Ed. Infantil', fund1: 'Fundamental I', fund2: 'Fundamental II' };
+    historico.unshift({ nome, url, modelo: nomes[modelo], data: new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) });
     historico = historico.slice(0, 10);
     localStorage.setItem('formatadoc_historico', JSON.stringify(historico));
     renderizarHistorico();
   }
-
   function renderizarHistorico() {
     const lista = document.getElementById('historico-lista');
-    if (!historico.length) {
-      lista.innerHTML = '<div class="empty-hist">Nenhum documento formatado ainda.</div>';
-      return;
-    }
+    if (!historico.length) { lista.innerHTML = '<div class="empty-hist">Nenhuma avaliação gerada ainda.</div>'; return; }
     lista.innerHTML = historico.map(h => `
       <div class="historico-item">
         <div class="hist-icon">📄</div>
-        <div class="hist-info">
-          <div class="hist-name">${h.nome} - Formatado</div>
-          <div class="hist-meta">${h.modelo} · ${h.data}</div>
-        </div>
+        <div class="hist-info"><div class="hist-name">${h.nome}</div><div class="hist-meta">${h.modelo} · ${h.data}</div></div>
         <a class="hist-link" href="${h.url}" target="_blank">Abrir →</a>
-      </div>
-    `).join('');
+      </div>`).join('');
   }
 
-  // ── INIT ──
-  // Aguarda a biblioteca do Google carregar
   window.addEventListener('load', () => {
-    if (typeof google !== 'undefined' && google.accounts) {
-      initGoogleAuth();
-    } else {
-      // Retry se a lib ainda não carregou
-      setTimeout(() => initGoogleAuth(), 500);
-    }
+    if (typeof google !== 'undefined' && google.accounts) initGoogleAuth();
+    else setTimeout(initGoogleAuth, 800);
   });
 </script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
