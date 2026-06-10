@@ -454,11 +454,10 @@
 
   function renderizarQuestoes() {
     const lista = document.getElementById('questoes-lista');
-    const empty = document.getElementById('questoes-empty');
     if (questoes.length === 0) {
-      empty.classList.remove('hidden'); lista.innerHTML = ''; lista.appendChild(empty); return;
+      lista.innerHTML = '<div class="empty-hist" id="questoes-empty">Nenhuma questão adicionada ainda.</div>';
+      return;
     }
-    empty.classList.add('hidden');
     lista.innerHTML = questoes.map((q, i) => {
       let extra = '';
       if (q.tipo === 'multipla' && q.alternativas) {
