@@ -492,7 +492,7 @@
 <script>
   // ── CONFIG ──
   const CLIENT_ID = '450030397976-647mvcl7sla23dhnjr9i3ru11lofolr0.apps.googleusercontent.com';
-  const SCOPES = 'https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive';
+  const SCOPES = 'openid email profile https://www.googleapis.com/auth/documents https://www.googleapis.com/auth/drive';
 
   // Padrões de formatação por modelo
   const MODELOS = {
@@ -569,7 +569,7 @@
       alert('Aguarde a página carregar completamente e tente novamente.');
       return;
     }
-    tokenClient.requestAccessToken({ prompt: 'consent' });
+    tokenClient.requestAccessToken({ prompt: 'consent', scope: SCOPES });
   }
 
   function fazerLogout() {
@@ -600,12 +600,10 @@
       return;
     }
     try {
-      const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { 'Authorization': 'Bearer ' + tokenAcesso }
-      });
-      console.log('userinfo status:', res.status);
+      const res = await fetch('https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=' + tokenAcesso);
+      console.log('tokeninfo status:', res.status);
       if (!res.ok) {
-        console.error('Erro userinfo:', res.status);
+        console.error('Erro tokeninfo:', res.status);
         localStorage.removeItem('formatadoc_token');
         localStorage.removeItem('formatadoc_token_exp');
         tokenAcesso = null;
@@ -613,7 +611,17 @@
         return;
       }
       const user = await res.json();
-      console.log('Usuário:', user.email);
+      console.log('Usuário email:', user.email);
+      if (!user.email) {
+        // Tentar userinfo como fallback
+        const res2 = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
+          headers: { 'Authorization': 'Bearer ' + tokenAcesso }
+        });
+        const user2 = await res2.json();
+        user.email = user2.email;
+        user.given_name = user2.given_name;
+        user.family_name = user2.family_name;
+      }
 
       if (!user.email || !user.email.endsWith('@colegioarena.com.br')) {
         mostrarStatus('error', '⛔ Acesso negado', 'Este app é restrito a contas @colegioarena.com.br.');
