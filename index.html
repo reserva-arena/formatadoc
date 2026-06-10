@@ -527,10 +527,15 @@
   let historico = JSON.parse(localStorage.getItem('formatadoc_historico') || '[]');
 
   // ── AUTH ──
+  function getRedirectUri() {
+    // URI exato cadastrado no Google Cloud
+    return 'https://reserva-arena.github.io/formatadoc';
+  }
+
   function fazerLogin() {
     const params = new URLSearchParams({
       client_id: CLIENT_ID,
-      redirect_uri: window.location.origin + window.location.pathname,
+      redirect_uri: getRedirectUri(),
       response_type: 'token',
       scope: SCOPES,
       prompt: 'select_account',
