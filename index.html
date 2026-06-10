@@ -532,16 +532,19 @@
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: SCOPES,
-      prompt: 'select_account',
       callback: async (response) => {
         if (response.error) {
-          console.error('Erro OAuth:', response);
-          mostrarLogin();
+          console.error('Erro OAuth:', response.error);
+          return;
+        }
+        if (!response.access_token) {
+          console.error('Token não recebido');
           return;
         }
         tokenAcesso = response.access_token;
+        const exp = Date.now() + (parseInt(response.expires_in || 3600) * 1000);
         localStorage.setItem('formatadoc_token', tokenAcesso);
-        localStorage.setItem('formatadoc_token_exp', String(Date.now() + (response.expires_in * 1000)));
+        localStorage.setItem('formatadoc_token_exp', String(exp));
         await carregarUsuario();
       }
     });
@@ -553,16 +556,17 @@
       tokenAcesso = savedToken;
       mostrarAppTela();
       carregarUsuario();
-      renderizarHistorico();
     } else {
       mostrarLogin();
     }
   }
 
   function fazerLogin() {
-    if (tokenClient) {
-      tokenClient.requestAccessToken();
+    if (!tokenClient) {
+      alert('Aguarde a página carregar completamente e tente novamente.');
+      return;
     }
+    tokenClient.requestAccessToken({ prompt: 'consent' });
   }
 
   function fazerLogout() {
