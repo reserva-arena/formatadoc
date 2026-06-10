@@ -533,15 +533,18 @@
       client_id: CLIENT_ID,
       scope: SCOPES,
       callback: async (response) => {
+        console.log('OAuth response:', JSON.stringify(response));
         if (response.error) {
           console.error('Erro OAuth:', response.error);
+          alert('Erro ao fazer login: ' + response.error);
           return;
         }
         if (!response.access_token) {
-          console.error('Token não recebido');
+          console.error('Token não recebido na resposta');
           return;
         }
         tokenAcesso = response.access_token;
+        console.log('Token recebido, carregando usuário...');
         const exp = Date.now() + (parseInt(response.expires_in || 3600) * 1000);
         localStorage.setItem('formatadoc_token', tokenAcesso);
         localStorage.setItem('formatadoc_token_exp', String(exp));
@@ -591,11 +594,26 @@
   }
 
   async function carregarUsuario() {
+    console.log('carregarUsuario chamado, token:', tokenAcesso ? 'presente' : 'ausente');
+    if (!tokenAcesso) {
+      mostrarLogin();
+      return;
+    }
     try {
       const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: 'Bearer ' + tokenAcesso }
+        headers: { 'Authorization': 'Bearer ' + tokenAcesso }
       });
+      console.log('userinfo status:', res.status);
+      if (!res.ok) {
+        console.error('Erro userinfo:', res.status);
+        localStorage.removeItem('formatadoc_token');
+        localStorage.removeItem('formatadoc_token_exp');
+        tokenAcesso = null;
+        mostrarLogin();
+        return;
+      }
       const user = await res.json();
+      console.log('Usuário:', user.email);
 
       if (!user.email || !user.email.endsWith('@colegioarena.com.br')) {
         mostrarStatus('error', '⛔ Acesso negado', 'Este app é restrito a contas @colegioarena.com.br.');
@@ -609,6 +627,7 @@
       document.getElementById('user-name-display').textContent = user.given_name || user.email;
     } catch (e) {
       console.error('Erro ao carregar usuário:', e);
+      mostrarLogin();
     }
   }
 
