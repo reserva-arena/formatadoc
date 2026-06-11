@@ -227,6 +227,8 @@
         <span class="user-name" id="user-name-display">—</span>
         <span class="role-badge" id="role-badge">—</span>
       </div>
+      <!-- BOTÃO TEMPORÁRIO DE SIMULAÇÃO -->
+      <button id="btn-simular" onclick="simularProfessor()" style="padding:5px 10px;background:#ED8936;color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">👤 Simular professor</button>
     </div>
   </header>
 
@@ -1016,8 +1018,29 @@
     }
   });
 
-  // ── INIT ──
-  window.addEventListener('load', () => {
+  // ── SIMULAÇÃO PROFESSOR (remover antes de produção) ──
+  window.simularProfessor = () => {
+    const btn = document.getElementById('btn-simular');
+    if (isCoord) {
+      isCoord = false;
+      usuarioNome = 'Professor Teste';
+      document.getElementById('role-badge').textContent = 'Professor';
+      document.getElementById('user-name-display').textContent = 'Prof. Teste';
+      document.getElementById('user-initials').textContent = 'PT';
+      btn.textContent = '👑 Voltar coord.';
+      btn.style.background = '#009B8D';
+    } else {
+      isCoord = true;
+      usuarioNome = 'Luciano';
+      document.getElementById('role-badge').textContent = 'Coordenação';
+      document.getElementById('user-name-display').textContent = 'Luciano';
+      document.getElementById('user-initials').textContent = 'LG';
+      btn.textContent = '👤 Simular professor';
+      btn.style.background = '#ED8936';
+    }
+    renderizarNav();
+    navegarPara(isCoord ? 'todas' : 'minhas');
+  };
     // Firebase Auth já inicializado via onAuthStateChanged
     // Google OAuth para Drive/Docs será iniciado após login
   });
