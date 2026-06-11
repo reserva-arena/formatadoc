@@ -1041,6 +1041,9 @@
     renderizarNav();
     navegarPara(isCoord ? 'todas' : 'minhas');
   };
+
+  // ── INIT ──
+  window.addEventListener('load', () => {
     // Firebase Auth já inicializado via onAuthStateChanged
     // Google OAuth para Drive/Docs será iniciado após login
   });
