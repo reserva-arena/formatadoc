@@ -495,6 +495,28 @@
     main.innerHTML = `
       <div class="page-title">Todas as Avaliações</div>
       <div class="page-subtitle">Revise e aprove as avaliações dos professores.</div>
+
+      <!-- CONTADORES -->
+      <div id="contadores" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+        <div class="contador-card" onclick="filtrarPorStatus('aguardando')" style="background:#EBF8FF;border:2px solid #BEE3F8;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+          <div style="font-size:24px;font-weight:700;color:#2B6CB0;" id="cnt-aguardando">—</div>
+          <div style="font-size:12px;color:#2B6CB0;font-weight:500;margin-top:4px;">⏳ Aguardando</div>
+        </div>
+        <div class="contador-card" onclick="filtrarPorStatus('correcao')" style="background:#FFFBEB;border:2px solid #F6E05E;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+          <div style="font-size:24px;font-weight:700;color:#744210;" id="cnt-correcao">—</div>
+          <div style="font-size:12px;color:#744210;font-weight:500;margin-top:4px;">✏️ Em correção</div>
+        </div>
+        <div class="contador-card" onclick="filtrarPorStatus('aprovada')" style="background:#F0FFF4;border:2px solid #9AE6B4;border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+          <div style="font-size:24px;font-weight:700;color:#276749;" id="cnt-aprovada">—</div>
+          <div style="font-size:12px;color:#276749;font-weight:500;margin-top:4px;">✅ Aprovadas</div>
+        </div>
+        <div class="contador-card" onclick="filtrarPorStatus('')" style="background:var(--bg);border:2px solid var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;transition:all 0.2s;">
+          <div style="font-size:24px;font-weight:700;color:var(--text);" id="cnt-total">—</div>
+          <div style="font-size:12px;color:var(--text-muted);font-weight:500;margin-top:4px;">📋 Total</div>
+        </div>
+      </div>
+
+      <!-- FILTROS -->
       <div class="filtros">
         <select id="filtro-status" onchange="aplicarFiltros()">
           <option value="">Todos os status</option>
@@ -503,10 +525,14 @@
           <option value="aprovada">✅ Aprovada</option>
           <option value="rascunho">📝 Rascunho</option>
         </select>
+        <select id="filtro-prof" onchange="aplicarFiltros()">
+          <option value="">Todos os professores</option>
+        </select>
         <select id="filtro-ano" onchange="aplicarFiltros()">
           <option value="">Todos os anos</option>
           <option>1° ANO</option><option>2° ANO</option><option>3° ANO</option>
-          <option>4° ANO</option><option>5° ANO</option>
+          <option>4° ANO</option><option>5° ANO</option><option>6° ANO</option>
+          <option>7° ANO</option><option>8° ANO</option><option>9° ANO</option>
         </select>
         <select id="filtro-disc" onchange="aplicarFiltros()">
           <option value="">Todas as disciplinas</option>
@@ -520,19 +546,48 @@
       const q = query(collection(db, 'avaliacoes'), orderBy('criadoEm', 'desc'));
       onSnapshot(q, (snap) => {
         window._todasAvals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        atualizarContadores();
+        atualizarFiltroProfessores();
         aplicarFiltros();
       });
     } catch(e) { console.error(e); }
   }
 
+  function atualizarContadores() {
+    const avals = window._todasAvals || [];
+    const cnt = (status) => avals.filter(a => a.status === status).length;
+    const el = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+    el('cnt-aguardando', cnt('aguardando'));
+    el('cnt-correcao', cnt('correcao'));
+    el('cnt-aprovada', cnt('aprovada'));
+    el('cnt-total', avals.length);
+  }
+
+  function atualizarFiltroProfessores() {
+    const avals = window._todasAvals || [];
+    const profs = [...new Set(avals.map(a => a.professorNome || a.professorEmail).filter(Boolean))].sort();
+    const select = document.getElementById('filtro-prof');
+    if (!select) return;
+    const valorAtual = select.value;
+    select.innerHTML = `<option value="">Todos os professores</option>` +
+      profs.map(p => `<option value="${p}" ${valorAtual===p?'selected':''}>${p}</option>`).join('');
+  }
+
+  window.filtrarPorStatus = (status) => {
+    const select = document.getElementById('filtro-status');
+    if (select) { select.value = status; aplicarFiltros(); }
+  };
+
   window.aplicarFiltros = () => {
     const status = document.getElementById('filtro-status')?.value || '';
+    const prof = document.getElementById('filtro-prof')?.value || '';
     const ano = document.getElementById('filtro-ano')?.value || '';
     const disc = document.getElementById('filtro-disc')?.value || '';
     const lista = document.getElementById('lista-avals');
     if (!lista || !window._todasAvals) return;
     let avals = window._todasAvals;
     if (status) avals = avals.filter(a => a.status === status);
+    if (prof) avals = avals.filter(a => (a.professorNome || a.professorEmail) === prof);
     if (ano) avals = avals.filter(a => a.anoSerie?.includes(ano));
     if (disc) avals = avals.filter(a => a.disciplina?.toLowerCase().includes(disc.toLowerCase()));
     if (avals.length === 0) { lista.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div><h3>Nenhuma avaliação encontrada</h3><p>Tente outros filtros.</p></div>`; return; }
