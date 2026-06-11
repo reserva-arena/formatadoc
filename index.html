@@ -182,6 +182,14 @@
     /* LACUNA DICA */
     .lacuna-dica { background:#FFFBEB; border:1px solid #F6E05E; border-radius:8px; padding:10px 12px; font-size:12px; color:#744210; margin-bottom:12px; }
 
+    .img-slot { border: 2px dashed var(--border); border-radius: 10px; padding: 12px; background: var(--bg); }
+    .img-slot-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .img-preview { max-width: 100%; max-height: 120px; border-radius: 6px; object-fit: contain; display: block; margin: 8px auto; }
+    .img-posicao { display: flex; gap: 8px; margin-top: 8px; }
+    .pos-btn { flex: 1; padding: 7px; border: 2px solid var(--border); border-radius: 6px; background: white; font-size: 12px; cursor: pointer; text-align: center; transition: all 0.2s; }
+    .pos-btn:hover { border-color: var(--teal); background: var(--teal-light); }
+    .pos-btn.active { border-color: var(--teal); background: var(--teal-light); font-weight: 600; }
+
     .hidden { display: none !important; }
     .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
 
@@ -285,6 +293,15 @@
       <div class="card-title" style="margin-top:12px">Afirmações <span style="font-weight:400;font-size:11px;color:var(--text-muted)">(o aluno marcará V ou F para cada uma)</span></div>
       <div id="vf-lista" class="alt-editor"></div>
       <button type="button" onclick="adicionarAfirmacao()" class="btn-secondary" style="margin-top:10px;font-size:12px;padding:7px 12px;">+ Afirmação</button>
+    </div>
+
+    <!-- IMAGENS -->
+    <div style="margin-top:16px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+        <div class="card-title" style="margin-bottom:0">Imagens <span style="font-weight:400;font-size:11px;color:var(--text-muted)">(opcional)</span></div>
+        <button type="button" onclick="adicionarImagemSlot()" class="btn-secondary" style="font-size:12px;padding:6px 12px;">📎 + Imagem</button>
+      </div>
+      <div id="imagens-lista" style="display:flex;flex-direction:column;gap:10px;"></div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="fecharModalQuestao()">Cancelar</button>
@@ -692,6 +709,8 @@
   // ── MODAL QUESTÃO ──
   window.abrirModalQuestao = (idx = null) => {
     editandoQuestaoIdx = idx;
+    imagensSlots = [];
+    document.getElementById('imagens-lista').innerHTML = '';
     document.getElementById('modal-questao-title').textContent = idx !== null ? 'Editar Questão' : 'Adicionar Questão';
     document.getElementById('modal-enunciado').value = '';
     document.getElementById('modal-valor').value = '';
@@ -709,6 +728,11 @@
         ['a','b','c','d','e'].forEach(l => { document.getElementById('alt-'+l).value = q.alternativas[l]||''; });
       }
       if (q.tipo === 'vf' && q.afirmacoes) q.afirmacoes.forEach(a => adicionarAfirmacao(a));
+      // Carregar imagens se existirem
+      if (q.imagens) {
+        imagensSlots = q.imagens.map(i => ({ file: null, dataUrl: i.dataUrl, posicao: i.posicao }));
+        renderizarImagensSlots();
+      }
     } else {
       if (tipoQuestaoAtual === 'vf') adicionarAfirmacao();
     }
@@ -741,7 +765,63 @@
     lista.appendChild(div);
   };
 
-  window.renumerarVF = () => {
+  // ── IMAGENS ──
+  let imagensSlots = []; // [{file, dataUrl, posicao}]
+
+  window.adicionarImagemSlot = () => {
+    const idx = imagensSlots.length;
+    imagensSlots.push({ file: null, dataUrl: null, posicao: 'centro' });
+    renderizarImagensSlots();
+  };
+
+  window.removerImagemSlot = (idx) => {
+    imagensSlots.splice(idx, 1);
+    renderizarImagensSlots();
+  };
+
+  window.selecionarPosicao = (idx, pos, btn) => {
+    imagensSlots[idx].posicao = pos;
+    const slotBtns = btn.parentElement.querySelectorAll('.pos-btn');
+    slotBtns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  };
+
+  window.onImagemChange = (idx, input) => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagensSlots[idx].file = file;
+      imagensSlots[idx].dataUrl = e.target.result;
+      renderizarImagensSlots();
+    };
+    reader.readAsDataURL(file);
+  };
+
+  function renderizarImagensSlots() {
+    const lista = document.getElementById('imagens-lista');
+    if (!lista) return;
+    lista.innerHTML = imagensSlots.map((img, idx) => `
+      <div class="img-slot">
+        <div class="img-slot-header">
+          <span style="font-size:13px;font-weight:600;color:var(--text);">Imagem ${idx + 1}</span>
+          <button type="button" onclick="removerImagemSlot(${idx})" style="margin-left:auto;background:transparent;border:none;color:var(--error);cursor:pointer;font-size:14px;">✕ Remover</button>
+        </div>
+        ${img.dataUrl ? `<img src="${img.dataUrl}" class="img-preview" />` : `
+          <label style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;background:white;border:2px dashed var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--text-muted);">
+            📁 Clique para selecionar a imagem
+            <input type="file" accept="image/*" onchange="onImagemChange(${idx}, this)" style="display:none" />
+          </label>`}
+        <div style="margin-top:10px;">
+          <div style="font-size:12px;font-weight:500;margin-bottom:6px;color:var(--text);">Posição na questão:</div>
+          <div class="img-posicao">
+            <button type="button" class="pos-btn ${img.posicao==='esquerda'?'active':''}" onclick="selecionarPosicao(${idx},'esquerda',this)">◀ Esquerda</button>
+            <button type="button" class="pos-btn ${img.posicao==='centro'?'active':''}" onclick="selecionarPosicao(${idx},'centro',this)">▬ Centro</button>
+            <button type="button" class="pos-btn ${img.posicao==='direita'?'active':''}" onclick="selecionarPosicao(${idx},'direita',this)">▶ Direita</button>
+          </div>
+        </div>
+      </div>`).join('');
+  }
     document.querySelectorAll('#vf-lista .alt-letra').forEach((el, i) => el.textContent = i + 1);
   };
 
@@ -756,7 +836,8 @@
       tipo: tipoQuestaoAtual, enunciado,
       valor: document.getElementById('modal-valor').value.trim(),
       alternativas: tipoQuestaoAtual === 'multipla' ? { a: document.getElementById('alt-a').value.trim(), b: document.getElementById('alt-b').value.trim(), c: document.getElementById('alt-c').value.trim(), d: document.getElementById('alt-d').value.trim(), e: document.getElementById('alt-e').value.trim() } : null,
-      afirmacoes: tipoQuestaoAtual === 'vf' ? Array.from(document.querySelectorAll('#vf-lista input')).map(i => i.value.trim()).filter(Boolean) : null
+      afirmacoes: tipoQuestaoAtual === 'vf' ? Array.from(document.querySelectorAll('#vf-lista input')).map(i => i.value.trim()).filter(Boolean) : null,
+      imagens: imagensSlots.filter(i => i.dataUrl).map(i => ({ dataUrl: i.dataUrl, posicao: i.posicao }))
     };
     if (editandoQuestaoIdx !== null) questoes[editandoQuestaoIdx] = q;
     else questoes.push(q);
@@ -793,6 +874,11 @@
       } else if (q.tipo === 'lacuna') {
         extra = `<div style="margin-top:6px;font-size:13px;">${q.enunciado.replace(/___/g,'<u>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</u>')}</div>`;
       }
+      const imgPreview = q.imagens?.length ? `<div style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;">${q.imagens.map(img => `
+        <div style="text-align:${img.posicao==='esquerda'?'left':img.posicao==='direita'?'right':'center'};flex:${img.posicao==='centro'?'1 1 100%':'0 0 auto'}">
+          <img src="${img.dataUrl}" style="max-height:80px;max-width:200px;border-radius:6px;object-fit:contain;" />
+          <div style="font-size:10px;color:var(--text-muted);margin-top:2px;">${img.posicao==='esquerda'?'◀ Esquerda':img.posicao==='direita'?'▶ Direita':'▬ Centro'}</div>
+        </div>`).join('')}</div>` : '';
       const val = q.valor ? `<span style="font-size:11px;color:var(--text-muted);margin-right:8px;">(${q.valor})</span>` : '';
       return `<div class="questao-item">
         <div class="questao-header">
@@ -806,6 +892,7 @@
         </div>
         <div class="questao-enunciado">${q.tipo !== 'lacuna' ? q.enunciado : ''}</div>
         ${extra}
+        ${imgPreview}
       </div>`;
     }).join('');
   }
