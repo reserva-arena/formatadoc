@@ -614,11 +614,17 @@
     const comentario = d.comentarioRevisao ? `<div class="aval-comentario"><strong>💬 Comentário da coordenação:</strong>${d.comentarioRevisao}</div>` : '';
     let actions = '';
     if (isCoordView) {
+      const abrirBtn = d.docUrl ? `<button class="btn-ghost" onclick="window.open('${d.docUrl}','_blank')">📄 Abrir doc</button>` : '';
       if (d.status === 'aguardando') {
         actions = `<button class="btn-primary" onclick="aprovarAvaliacao('${id}')">✅ Aprovar</button>
-                   <button class="btn-secondary" onclick="abrirModalRevisao('${id}')">🔄 Solicitar revisão</button>`;
-      } else if (d.status === 'aprovada') {
-        actions = `<button class="btn-ghost" onclick="window.open('${d.docUrl}','_blank')">📄 Abrir doc</button>`;
+                   <button class="btn-secondary" onclick="abrirModalRevisao('${id}')">🔄 Solicitar revisão</button>
+                   ${abrirBtn}`;
+      } else if (d.status === 'correcao') {
+        actions = `<button class="btn-primary" onclick="aprovarAvaliacao('${id}')">✅ Aprovar</button>
+                   <button class="btn-secondary" onclick="abrirModalRevisao('${id}')">🔄 Solicitar revisão</button>
+                   ${abrirBtn}`;
+      } else {
+        actions = abrirBtn;
       }
     } else {
       if (d.status === 'correcao') {
