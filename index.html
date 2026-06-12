@@ -235,6 +235,8 @@
         <span class="user-name" id="user-name-display">—</span>
         <span class="role-badge" id="role-badge">—</span>
       </div>
+      <!-- BOTÃO AUTORIZAR DRIVE -->
+      <button id="btn-autorizar-drive" onclick="autorizarDrive()" style="padding:5px 10px;background:#4285F4;color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;display:none;">🔑 Autorizar Drive</button>
       <!-- BOTÃO TEMPORÁRIO DE SIMULAÇÃO -->
       <button id="btn-simular" onclick="simularProfessor()" style="padding:5px 10px;background:#ED8936;color:white;border:none;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;">👤 Simular professor</button>
     </div>
@@ -429,22 +431,40 @@
     // Verificar token salvo
     const t = localStorage.getItem('fmt_drive_token');
     const e = localStorage.getItem('fmt_drive_exp');
-    if (t && e && Date.now() < parseInt(e)) { tokenAcesso = t; }
+    if (t && e && Date.now() < parseInt(e)) {
+      tokenAcesso = t;
+    } else {
+      // Token ausente ou expirado — mostrar botão de autorizar
+      const btnAuth = document.getElementById('btn-autorizar-drive');
+      if (btnAuth) btnAuth.style.display = 'inline-block';
+    }
   }
 
   function garantirTokenDrive() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const t = localStorage.getItem('fmt_drive_token');
       const e = localStorage.getItem('fmt_drive_exp');
       if (t && e && Date.now() < parseInt(e)) { tokenAcesso = t; resolve(); return; }
-      if (tokenClient) {
-        const origCallback = tokenClient.callback;
-        tokenClient.callback = (r) => {
-          origCallback(r);
-          resolve();
-        };
-        tokenClient.requestAccessToken({ prompt: '' });
-      } else { resolve(); }
+      if (!tokenClient) {
+        reject(new Error('Cliente OAuth não inicializado. Recarregue a página e tente novamente.'));
+        return;
+      }
+      // Timeout de 30s para evitar travar indefinidamente
+      const timeout = setTimeout(() => {
+        reject(new Error('Tempo esgotado ao obter permissão do Google Drive. Clique em "Autorizar Drive" e tente novamente.'));
+      }, 30000);
+      tokenClient.callback = (r) => {
+        clearTimeout(timeout);
+        if (r.error) {
+          reject(new Error('Erro ao autorizar Google Drive: ' + (r.error_description || r.error)));
+          return;
+        }
+        tokenAcesso = r.access_token;
+        localStorage.setItem('fmt_drive_token', r.access_token);
+        localStorage.setItem('fmt_drive_exp', String(Date.now() + (parseInt(r.expires_in||3600)*1000)));
+        resolve();
+      };
+      tokenClient.requestAccessToken({ prompt: '' });
     });
   }
 
@@ -1318,6 +1338,20 @@
     navegarPara(isCoord ? 'todas' : 'minhas');
   };
 
+
+  // ── AUTORIZAR DRIVE ──
+  window.autorizarDrive = () => {
+    if (!tokenClient) { alert('Recarregue a página e tente novamente.'); return; }
+    tokenClient.callback = (r) => {
+      if (r.error) { alert('Erro ao autorizar: ' + (r.error_description || r.error)); return; }
+      tokenAcesso = r.access_token;
+      localStorage.setItem('fmt_drive_token', r.access_token);
+      localStorage.setItem('fmt_drive_exp', String(Date.now() + (parseInt(r.expires_in||3600)*1000)));
+      document.getElementById('btn-autorizar-drive').style.display = 'none';
+      alert('✅ Drive autorizado! Agora você pode gerar avaliações.');
+    };
+    tokenClient.requestAccessToken({ prompt: 'consent' });
+  };
 
   // ── EXCLUIR AVALIAÇÃO ──
   window.excluirAvaliacao = async (id, titulo) => {
