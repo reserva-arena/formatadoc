@@ -970,6 +970,52 @@
     }).join('');
   }
 
+  // ── UPLOAD IMAGEM PARA DRIVE ──
+  async function uploadImagemDrive(dataUrl, nomeArquivo) {
+    // Converter dataUrl para Blob
+    const res = await fetch(dataUrl);
+    const blob = await res.blob();
+    const mimeType = blob.type || 'image/png';
+
+    // Upload multipart para o Drive
+    const boundary = 'arena_boundary_' + Date.now();
+    const metadados = JSON.stringify({ name: nomeArquivo, mimeType });
+    const encoder = new TextEncoder();
+
+    // Montar body multipart manualmente
+    const parteInicio = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${metadados}\r\n--${boundary}\r\nContent-Type: ${mimeType}\r\n\r\n`;
+    const parteFim = `\r\n--${boundary}--`;
+
+    const blocoInicio = encoder.encode(parteInicio);
+    const blocoFim = encoder.encode(parteFim);
+    const blocoImagem = new Uint8Array(await blob.arrayBuffer());
+
+    const bodyFinal = new Uint8Array(blocoInicio.length + blocoImagem.length + blocoFim.length);
+    bodyFinal.set(blocoInicio, 0);
+    bodyFinal.set(blocoImagem, blocoInicio.length);
+    bodyFinal.set(blocoFim, blocoInicio.length + blocoImagem.length);
+
+    const r = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + tokenAcesso,
+        'Content-Type': `multipart/related; boundary=${boundary}`
+      },
+      body: bodyFinal
+    });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || 'Erro upload imagem'); }
+    const arquivo = await r.json();
+
+    // Tornar público para inserir no Doc via URL
+    await fetch(`https://www.googleapis.com/drive/v3/files/${arquivo.id}/permissions`, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + tokenAcesso, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role: 'reader', type: 'anyone' })
+    });
+
+    return `https://drive.google.com/uc?export=view&id=${arquivo.id}`;
+  }
+
   // ── GERAR AVALIAÇÃO ──
   window.gerarAvaliacao = async () => {
     const disciplina = document.getElementById('f-disciplina').value.trim().toUpperCase();
@@ -987,34 +1033,86 @@
     try {
       const templateId = TEMPLATE_IDS[window._modeloSelecionado];
       const copia = await apiPost(`https://www.googleapis.com/drive/v3/files/${templateId}/copy`, { name: nomeDoc });
+
+      // Verificar se há imagens para fazer upload
+      const temImagens = questoes.some(q => q.imagens?.length > 0);
+      if (temImagens) mostrarStatus('loading', '⏳ Enviando imagens...', 'Fazendo upload das imagens para o Drive.');
+
+      // Upload de todas as imagens e mapear URLs públicas
+      const urlsImagens = {}; // chave: "questao_idx_img_idx" → url pública
+      for (let qi = 0; qi < questoes.length; qi++) {
+        const q = questoes[qi];
+        if (!q.imagens?.length) continue;
+        for (let ii = 0; ii < q.imagens.length; ii++) {
+          const img = q.imagens[ii];
+          if (!img.dataUrl) continue;
+          const url = await uploadImagemDrive(img.dataUrl, `img_q${qi+1}_${ii+1}_${nomeDoc}.png`);
+          urlsImagens[`${qi}_${ii}`] = { url, posicao: img.posicao };
+        }
+      }
+
       mostrarStatus('loading', '⏳ Inserindo conteúdo...', 'Preenchendo dados e questões.');
       const conteudo = montarConteudo();
-
-      // Cor da borda: #ECEBE7 → RGB (236, 235, 231)
-      const corBorda = { red: 236/255, green: 235/255, blue: 231/255 };
-      // 8mm em EMU (1pt = 12700 EMU, 1mm = 2.835pt)
-      const bordaOffset = Math.round(8 * 2.835 * 12700); // ~2874780 EMU
-      const bordaLargura = Math.round(0.75 * 12700); // 0.75pt em EMU
 
       await apiPost(`https://docs.googleapis.com/v1/documents/${copia.id}:batchUpdate`, { requests: [
         { replaceAllText: { containsText: { text: '{{TITULO}}', matchCase: true }, replaceText: titulo } },
         { replaceAllText: { containsText: { text: '{{SUBTITULO}}', matchCase: true }, replaceText: subtitulo } },
         { replaceAllText: { containsText: { text: '{{VALOR}}', matchCase: true }, replaceText: valor } },
         { replaceAllText: { containsText: { text: '{{CONTEUDO}}', matchCase: true }, replaceText: conteudo } },
-        // Borda de página fina — só topo e esquerda (direita = decoração geométrica, base = rodapé Arena)
-        {
-          updateDocumentStyle: {
-            documentStyle: {
-              pageBorderTop:  { color: { color: { rgbColor: corBorda } }, width: { magnitude: 0.75, unit: 'PT' }, padding: { magnitude: 8, unit: 'MM' }, dashStyle: 'SOLID' },
-              pageBorderLeft: { color: { color: { rgbColor: corBorda } }, width: { magnitude: 0.75, unit: 'PT' }, padding: { magnitude: 8, unit: 'MM' }, dashStyle: 'SOLID' },
-              pageBorderDisplay: 'ALL_PAGES'
-            },
-            fields: 'pageBorderTop,pageBorderLeft,pageBorderDisplay'
-          }
-        },
       ]});
+
+      // Inserir imagens no documento após o texto de cada questão
+      if (Object.keys(urlsImagens).length > 0) {
+        mostrarStatus('loading', '⏳ Inserindo imagens...', 'Posicionando imagens no documento.');
+
+        // Buscar documento para encontrar posições do texto
+        const docAtual = await fetch(`https://docs.googleapis.com/v1/documents/${copia.id}`, {
+          headers: { Authorization: 'Bearer ' + tokenAcesso }
+        }).then(r => r.json());
+
+        const requests = [];
+        // Para cada questão com imagem, encontrar o índice do fim do texto da questão
+        for (let qi = questoes.length - 1; qi >= 0; qi--) {
+          const q = questoes[qi];
+          if (!q.imagens?.length) continue;
+          const marcador = `${qi+1})`;
+          // Encontrar índice do parágrafo da questão no documento
+          let endIndex = null;
+          const body = docAtual.body?.content || [];
+          for (let pi = body.length - 1; pi >= 0; pi--) {
+            const paragrafo = body[pi];
+            const texto = paragrafo.paragraph?.elements?.map(e => e.textRun?.content || '').join('') || '';
+            if (texto.startsWith(marcador)) {
+              endIndex = paragrafo.endIndex - 1;
+              break;
+            }
+          }
+          if (endIndex === null) continue;
+
+          // Inserir imagens em ordem reversa para não deslocar índices
+          for (let ii = q.imagens.length - 1; ii >= 0; ii--) {
+            const chave = `${qi}_${ii}`;
+            if (!urlsImagens[chave]) continue;
+            const { url, posicao } = urlsImagens[chave];
+            const alinhamento = posicao === 'esquerda' ? 'START' : posicao === 'direita' ? 'END' : 'CENTER';
+            requests.push({
+              insertInlineImage: {
+                location: { index: endIndex },
+                uri: url,
+                objectSize: {
+                  height: { magnitude: 150, unit: 'PT' },
+                  width: { magnitude: 300, unit: 'PT' }
+                }
+              }
+            });
+          }
+        }
+        if (requests.length > 0) {
+          await apiPost(`https://docs.googleapis.com/v1/documents/${copia.id}:batchUpdate`, { requests });
+        }
+      }
+
       const docUrl = `https://docs.google.com/document/d/${copia.id}/edit`;
-      // Salvar no Firestore
       await addDoc(collection(db, 'avaliacoes'), {
         titulo, disciplina, anoSerie: ano, bimestre: bim, valor,
         professorEmail: usuarioEmail, professorNome: usuarioNome,
@@ -1022,7 +1120,7 @@
         criadoEm: serverTimestamp()
       });
       setBotao(false);
-      document.getElementById('status-area').innerHTML = `<div class="status-box success"><span>✅</span><div><strong>Avaliação gerada com sucesso!</strong>"${nomeDoc}" está no seu Drive.<br><a class="result-link" href="${docUrl}" target="_blank">📄 Abrir documento</a></div></div>`;
+      document.getElementById('status-area').innerHTML = `<div class="status-box success"><span>✅</span><div><strong>Avaliação gerada com sucesso!</strong> "${nomeDoc}" está no seu Drive.<br><a class="result-link" href="${docUrl}" target="_blank">📄 Abrir documento</a></div></div>`;
     } catch(e) {
       setBotao(false);
       mostrarStatus('error', '❌ Erro', e.message || 'Tente novamente.');
