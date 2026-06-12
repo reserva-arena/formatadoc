@@ -327,7 +327,7 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-  import { getFirestore, collection, doc, addDoc, updateDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+  import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, where, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
   // ── CONFIG ──
@@ -613,18 +613,27 @@
     const profLabel = isCoordView ? `<span>👤 ${d.professorNome || d.professorEmail}</span>` : '';
     const comentario = d.comentarioRevisao ? `<div class="aval-comentario"><strong>💬 Comentário da coordenação:</strong>${d.comentarioRevisao}</div>` : '';
     let actions = '';
+
+    // Botão excluir: coord pode sempre, professor só em rascunho
+    const podeExcluir = isCoordView || d.status === 'rascunho';
+    const excluirBtn = podeExcluir
+      ? `<button class="btn-danger" onclick="excluirAvaliacao('${id}', '${(d.titulo||'').replace(/'/g,'')}')" style="margin-left:auto;">🗑️ Excluir</button>`
+      : '';
+
     if (isCoordView) {
       const abrirBtn = d.docUrl ? `<button class="btn-ghost" onclick="window.open('${d.docUrl}','_blank')">📄 Abrir doc</button>` : '';
       if (d.status === 'aguardando') {
         actions = `<button class="btn-primary" onclick="aprovarAvaliacao('${id}')">✅ Aprovar</button>
                    <button class="btn-secondary" onclick="abrirModalRevisao('${id}')">🔄 Solicitar revisão</button>
-                   ${abrirBtn}`;
+                   ${abrirBtn}
+                   ${excluirBtn}`;
       } else if (d.status === 'correcao') {
         actions = `<button class="btn-primary" onclick="aprovarAvaliacao('${id}')">✅ Aprovar</button>
                    <button class="btn-secondary" onclick="abrirModalRevisao('${id}')">🔄 Solicitar revisão</button>
-                   ${abrirBtn}`;
+                   ${abrirBtn}
+                   ${excluirBtn}`;
       } else {
-        actions = abrirBtn;
+        actions = `${abrirBtn} ${excluirBtn}`;
       }
     } else {
       if (d.status === 'correcao') {
@@ -632,7 +641,8 @@
                    <button class="btn-ghost" onclick="window.open('${d.docUrl}','_blank')">📄 Abrir e corrigir</button>`;
       } else if (d.status === 'rascunho') {
         actions = `<button class="btn-primary" onclick="enviarParaRevisao('${id}')">📤 Enviar para revisão</button>
-                   <button class="btn-ghost" onclick="window.open('${d.docUrl}','_blank')">📄 Abrir doc</button>`;
+                   <button class="btn-ghost" onclick="window.open('${d.docUrl}','_blank')">📄 Abrir doc</button>
+                   ${excluirBtn}`;
       } else {
         actions = `<button class="btn-ghost" onclick="window.open('${d.docUrl}','_blank')">📄 Abrir doc</button>`;
       }
@@ -991,17 +1001,15 @@
         { replaceAllText: { containsText: { text: '{{SUBTITULO}}', matchCase: true }, replaceText: subtitulo } },
         { replaceAllText: { containsText: { text: '{{VALOR}}', matchCase: true }, replaceText: valor } },
         { replaceAllText: { containsText: { text: '{{CONTEUDO}}', matchCase: true }, replaceText: conteudo } },
-        // Borda de página fina em todos os lados
+        // Borda de página fina — só topo e esquerda (direita = decoração geométrica, base = rodapé Arena)
         {
           updateDocumentStyle: {
             documentStyle: {
-              pageBorderTop:    { color: { color: { rgbColor: corBorda } }, width: { magnitude: 0.75, unit: 'PT' }, padding: { magnitude: 8, unit: 'MM' }, dashStyle: 'SOLID' },
-              pageBorderBottom: { color: { color: { rgbColor: corBorda } }, width: { magnitude: 0.75, unit: 'PT' }, padding: { magnitude: 8, unit: 'MM' }, dashStyle: 'SOLID' },
-              pageBorderLeft:   { color: { color: { rgbColor: corBorda } }, width: { magnitude: 0.75, unit: 'PT' }, padding: { magnitude: 8, unit: 'MM' }, dashStyle: 'SOLID' },
-              pageBorderRight:  { color: { color: { rgbColor: corBorda } }, width: { magnitude: 0.75, unit: 'PT' }, padding: { magnitude: 8, unit: 'MM' }, dashStyle: 'SOLID' },
+              pageBorderTop:  { color: { color: { rgbColor: corBorda } }, width: { magnitude: 0.75, unit: 'PT' }, padding: { magnitude: 8, unit: 'MM' }, dashStyle: 'SOLID' },
+              pageBorderLeft: { color: { color: { rgbColor: corBorda } }, width: { magnitude: 0.75, unit: 'PT' }, padding: { magnitude: 8, unit: 'MM' }, dashStyle: 'SOLID' },
               pageBorderDisplay: 'ALL_PAGES'
             },
-            fields: 'pageBorderTop,pageBorderBottom,pageBorderLeft,pageBorderRight,pageBorderDisplay'
+            fields: 'pageBorderTop,pageBorderLeft,pageBorderDisplay'
           }
         },
       ]});
@@ -1210,6 +1218,17 @@
     }
     renderizarNav();
     navegarPara(isCoord ? 'todas' : 'minhas');
+  };
+
+
+  // ── EXCLUIR AVALIAÇÃO ──
+  window.excluirAvaliacao = async (id, titulo) => {
+    if (!confirm(`Excluir "${titulo}"? Esta ação não pode ser desfeita.`)) return;
+    try {
+      await deleteDoc(doc(db, 'avaliacoes', id));
+    } catch(e) {
+      alert('Erro ao excluir: ' + e.message);
+    }
   };
 
   // ── INIT ──
