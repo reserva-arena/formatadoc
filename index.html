@@ -1081,43 +1081,55 @@
         { replaceAllText: { containsText: { text: '{{CONTEUDO}}', matchCase: true }, replaceText: conteudo } },
       ]});
 
-      // Inserir imagens no documento após o texto de cada questão
+      // Inserir imagens no documento usando marcadores {{IMG_Q1}}, {{IMG_Q2}}...
       if (Object.keys(urlsImagens).length > 0) {
         mostrarStatus('loading', '⏳ Inserindo imagens...', 'Posicionando imagens no documento.');
 
-        // Buscar documento para encontrar posições do texto
+        // Buscar documento para encontrar posições dos marcadores
         const docAtual = await fetch(`https://docs.googleapis.com/v1/documents/${copia.id}`, {
           headers: { Authorization: 'Bearer ' + tokenAcesso }
         }).then(r => r.json());
 
         const requests = [];
-        // Para cada questão com imagem, encontrar o índice do fim do texto da questão
+        // Processar questões em ordem reversa para não deslocar índices
         for (let qi = questoes.length - 1; qi >= 0; qi--) {
           const q = questoes[qi];
-          if (!q.imagens?.length) continue;
-          const marcador = `${qi+1})`;
-          // Encontrar índice do parágrafo da questão no documento
-          let endIndex = null;
+          if (!q.imagens?.some(img => img.dataUrl)) continue;
+          const marcadorTexto = `{{IMG_Q${qi+1}}}`;
           const body = docAtual.body?.content || [];
-          for (let pi = body.length - 1; pi >= 0; pi--) {
+
+          // Encontrar o parágrafo com o marcador
+          let marcadorIndex = null;
+          let marcadorEndIndex = null;
+          for (let pi = 0; pi < body.length; pi++) {
             const paragrafo = body[pi];
             const texto = paragrafo.paragraph?.elements?.map(e => e.textRun?.content || '').join('') || '';
-            if (texto.startsWith(marcador)) {
-              endIndex = paragrafo.endIndex - 1;
+            if (texto.includes(marcadorTexto)) {
+              // Índice do início do marcador dentro do parágrafo
+              const startIdx = paragrafo.startIndex;
+              const endIdx = paragrafo.endIndex;
+              marcadorIndex = startIdx;
+              marcadorEndIndex = endIdx;
               break;
             }
           }
-          if (endIndex === null) continue;
+          if (marcadorIndex === null) continue;
 
-          // Inserir imagens em ordem reversa para não deslocar índices
+          // Primeiro: deletar o parágrafo do marcador
+          requests.push({
+            deleteContentRange: {
+              range: { startIndex: marcadorIndex, endIndex: marcadorEndIndex }
+            }
+          });
+
+          // Depois: inserir as imagens no lugar (índice ajustado após delete)
           for (let ii = q.imagens.length - 1; ii >= 0; ii--) {
             const chave = `${qi}_${ii}`;
             if (!urlsImagens[chave]) continue;
-            const { url, posicao } = urlsImagens[chave];
-            const alinhamento = posicao === 'esquerda' ? 'START' : posicao === 'direita' ? 'END' : 'CENTER';
+            const { url } = urlsImagens[chave];
             requests.push({
               insertInlineImage: {
-                location: { index: endIndex },
+                location: { index: marcadorIndex },
                 uri: url,
                 objectSize: {
                   height: { magnitude: 150, unit: 'PT' },
@@ -1150,7 +1162,10 @@
   function montarConteudo() {
     return questoes.map((q, i) => {
       const val = q.valor ? ` (${q.valor})` : '';
-      let t = `${i+1}) ${q.enunciado}${val}\n`;
+      const temImagem = q.imagens?.some(img => img.dataUrl);
+      // Marcador de imagem inserido após o enunciado, antes das alternativas/resposta
+      const marcadorImg = temImagem ? `\n{{IMG_Q${i+1}}}` : '';
+      let t = `${i+1}) ${q.enunciado}${val}${marcadorImg}\n`;
       if (q.tipo === 'multipla' && q.alternativas) t += Object.entries(q.alternativas).filter(([,v])=>v).map(([k,v])=>`${k.toUpperCase()}) ${v}`).join('\n')+'\n';
       else if (q.tipo === 'vf' && q.afirmacoes) t += q.afirmacoes.map((a,n)=>`${n+1}. ${a}  ( ) V   ( ) F`).join('\n')+'\n';
       else if (q.tipo === 'lacuna') t += q.enunciado.replace(/___/g,'_____________')+'\n';
